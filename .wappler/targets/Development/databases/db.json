@@ -1,0 +1,428 @@
+{
+  "direct": true,
+  "type": "mysql",
+  "connection": {
+    "host": "localhost",
+    "port": "${./config.db_development.PORT}",
+    "user": "${./config.db_development.USER}",
+    "password": "${./config.db_development.PASSWORD}",
+    "database": "skill"
+  },
+  "schema": {
+    "tables": {
+      "subcategory": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "skill",
+          "collation": "utf8mb4_unicode_ci",
+          "comment": ""
+        },
+        "columns": {
+          "id": {
+            "db": {
+              "type": "increments",
+              "primary": true,
+              "comment": "",
+              "nullable": false
+            }
+          },
+          "categoryId": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "category",
+              "onUpdate": "CASCADE",
+              "onDelete": "CASCADE"
+            }
+          },
+          "description": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "offer": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "skill",
+          "collation": "utf8mb4_unicode_ci",
+          "comment": ""
+        },
+        "columns": {
+          "id": {
+            "db": {
+              "type": "increments",
+              "primary": true,
+              "comment": "",
+              "nullable": false
+            }
+          },
+          "userId": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "user",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "datetime": {
+            "db": {
+              "type": "datetime",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "takeCategory": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "category",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "giveCategory": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "category",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "takeSubcategory": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "subcategory",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "giveSubcategory": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "subcategory",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "takeLevel": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "giveLevel": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "stars": {
+            "db": {
+              "type": "float",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "isApproved": {
+            "db": {
+              "type": "boolean",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "isPending": {
+            "db": {
+              "type": "boolean",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "description": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "image1": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "status": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "numOfRates": {
+            "db": {
+              "type": "float",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "user": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "skill",
+          "collation": "utf8_general_ci",
+          "comment": ""
+        },
+        "columns": {
+          "id": {
+            "db": {
+              "type": "increments",
+              "primary": true,
+              "comment": "",
+              "nullable": false
+            }
+          },
+          "name": {
+            "db": {
+              "type": "string",
+              "maxLength": 50,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "surname": {
+            "db": {
+              "type": "string",
+              "maxLength": 50,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "telephone": {
+            "db": {
+              "type": "string",
+              "maxLength": 50,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "email": {
+            "db": {
+              "type": "string",
+              "maxLength": 50,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "country": {
+            "db": {
+              "type": "string",
+              "maxLength": 50,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "avatar": {
+            "db": {
+              "type": "string",
+              "maxLength": 100,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "username": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "rating": {
+            "db": {
+              "type": "float",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "isAdmin": {
+            "db": {
+              "type": "boolean",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "default": "0"
+            }
+          },
+          "bio": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "datetime": {
+            "db": {
+              "type": "datetime",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "password": {
+            "db": {
+              "type": "string",
+              "maxLength": 50,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "comment": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "skill",
+          "collation": "utf8mb4_unicode_ci",
+          "comment": ""
+        },
+        "columns": {
+          "id": {
+            "db": {
+              "type": "increments",
+              "primary": true,
+              "comment": "",
+              "nullable": false
+            }
+          },
+          "datetime": {
+            "db": {
+              "type": "datetime",
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          },
+          "userId": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "user",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "offerId": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "comment": "",
+              "nullable": true,
+              "references": "id",
+              "inTable": "offer",
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          "comment": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "category": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "skill",
+          "collation": "utf8mb4_unicode_ci",
+          "comment": ""
+        },
+        "columns": {
+          "id": {
+            "db": {
+              "type": "increments",
+              "primary": true,
+              "comment": "",
+              "nullable": false
+            }
+          },
+          "description": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "comment": "",
+              "nullable": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

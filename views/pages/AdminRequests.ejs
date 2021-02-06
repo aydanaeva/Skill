@@ -1,0 +1,159 @@
+<!-- Wappler include head-page="layouts/Main" jquery_slim_33="cdn" bootstrap4="local" is="dmx-app" id="AdminRequests" appConnect="local" components="{dmxBootstrap4Modal:{},dmxSwiper:{},dmxScheduler:{}}" fontawesome_5pro="cdn" -->
+
+<meta name="ac:route" content="/admin">
+
+<!-- Server connect to fetch existing subcategories -->
+<dmx-serverconnect id="getSubcats" url="../api/makeNewOffer/getsubcats" dmx-param:cat="removesubcat.existingcat2.value"></dmx-serverconnect>
+<!-- Server connect to fetch requests that needed to be review -->
+<dmx-serverconnect id="getReviewOffers" url="../api/admin/fetchReviewOffers" site="Skill"></dmx-serverconnect>
+<!-- Server connect to reject the request -->
+<dmx-serverconnect id="rejectOffer" url="../api/admin/rejectOffer" site="Skill" dmx-param:id="reviewOffers.offers[0].id" dmx-param:status="reviewOffers[0].reviewedoffer.status.value" noload></dmx-serverconnect>
+<!-- Server connect to approve the request -->
+<dmx-serverconnect id="approveOffer" url="../api/admin/approveOffer" site="Skill" dmx-param:id="reviewOffers.offers[0].id" dmx-param:status="reviewOffers[0].reviewedoffer.status.value" noload></dmx-serverconnect>
+<!-- Server connect to get subcategory description from subcategory ID -->
+<dmx-serverconnect id="getSubcatFromIDOffer" url="../api/offers/getSubcatFromID" site="Skill" dmx-param:dir="" dmx-param:subcat="getReviewOffers.data.query[0].takeSubcategory+getReviewOffers.data.query[0].giveSubcategory"></dmx-serverconnect>
+
+
+<!-- Flex container to maintain responsiveness -->
+<div class="d-flex flex-column justify-content-around h-100 card-class-login">
+    <!-- Modal to view full offer -->
+    <div class="modal" id="fullOfferAdmin" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal's header that displays Offer #id -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Offer #{{content.fullOfferAdmin.data_detail1.data.id}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!-- Modal's body -->
+                <div class="modal-body">
+                    <!-- Flex container with Data Detail property to properly fetch data from the repeated card -->
+                    <div class="d-flex flex-column" is="dmx-data-detail" id="data_detail1" dmx-bind:data="getReviewOffers.data.repeat" key="id">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- Row to display the avatar, name and surname of the user, who published the offer, as well as the "I give/I take" levels and subcategories -->
+                                <div class="row border-bottom border-light justify-content-around align-items-center">
+                                    <div class="col-2 align-self-start">
+                                        <img dmx-bind:src="'/assets/images/'+content.fullOfferAdmin.data_detail1.data.user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                                    </div>
+                                    <div class="col">
+                                        <p class="font-weight-bolder mb-0">{{content.fullOfferAdmin.data_detail1.data.user[0].name+' '+ content.fullOfferAdmin.data_detail1.data.user[0].surname}}</p>
+                                        <p class="small font-weight-bolder">@{{content.fullOfferAdmin.data_detail1.data.user[0].username}}</p>
+                                    </div>
+                                    <div class="d-flex flex-row col justify-content-end h-100 align-items-center">
+                                        <div class="d-flex inline bg-light offer-subcat-level pt-1 pb-1 pl-1 pr-1 align-items-center"><i class="fas fa-circle fa-xs level-circle"
+                                                dmx-style:color="content.fullOfferAdmin.data_detail1.data.giveLevel == 1 ? 'red' : (content.fullOfferAdmin.data_detail1.data.giveLevel == 2 ? 'yellow' : 'green');"></i>
+                                            <p class="small mb-0">{{content.fullOfferAdmin.data_detail1.data.givesubcat[0].description}}</p>
+                                        </div><i class="fal fa-arrow-right"></i>
+                                        <div class="d-flex bg-light offer-subcat-level pt-1 pb-1 pl-1 pr-1 align-items-center"><i class="fas fa-circle fa-xs level-circle"
+                                                dmx-style:color="content.fullOfferAdmin.data_detail1.data.takeLevel == 1 ? 'red' : (content.fullOfferAdmin.data_detail1.data.takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                            <p class="small mb-0">{{content.fullOfferAdmin.data_detail1.data.takesubcat[0].description}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Row to display the image of the offer -->
+                                <div class="row mt-3">
+                                    <div class="col text-center">
+                                        <img dmx-bind:src="'/assets/images/'+content.fullOfferAdmin.data_detail1.data.image1" width="400px" height="350px" class="rounded">
+                                    </div>
+                                </div>
+                                <!-- Row to display description of the offer -->
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <p class="card-text text-center text-dark font-italic">{{content.fullOfferAdmin.data_detail1.data.description}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modals' footer -->
+                <div class="modal-footer">
+                    <!-- Flex container with input for feedback and button group to approve/reject the offer -->
+                    <div class="d-flex flex-column w-100">
+                        <div class="form-group text-center ">
+                            <label for="status">Please explain your decision here:</label>
+                            <input type="text" class="form-control" id="status" name="status" aria-describedby="input1_help" placeholder="Why did you reject the offer?">
+                            <small id="input1_help" class="form-text text-muted">Your input is very valuable.</small>
+                        </div>
+                        <div class="btn-group " role="group" aria-label="Button Group">
+                            <button id="reject" class="btn" type="submit" dmx-on:click="rejectOffer.load({id: data_detail1.data.id, status: status.value})"><i class="fal fa-times cancel-icon"></i></button>
+                            <button id="approve" class="btn" type="submit" dmx-on:click="approveOffer.load({id: data_detail1.data.id, status: status.value})">
+                                <i class="fal fa-check submit-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card of repeated requests for review -->
+    <div class="card search-card">
+        <!-- Card's header -->
+        <div class="card-header">Requests</div>
+        <!-- Card's body -->
+        <div class="card-body" is="dmx-repeat" id="reviewOffers" dmx-bind:repeat="getReviewOffers.data.repeat">
+            <div class="row">
+                <div class="col d-flex flex-row align-items-baseline justify-content-between">
+                    <p class="card-text mb-0">Post: #{{id}}</p>
+                    <!-- Button that toggles the full offer modal -->
+                    <div class="btn-group" role="group" aria-label="Button Group"><button id="review2" class="btn" dmx-on:click="fullOfferAdmin.show();fullOfferAdmin.data_detail1.select(id)"><i class="fal fa-pencil-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card that manages categories and subcategories -->
+    <div class="card search-card">
+        <div class="card-body">
+            <p class="card-title font-weight-bolder mb-4">Modifications</p>
+            <!-- Form to add category -->
+            <form is="dmx-serverconnect-form" id="addcat" method="post" action="../api/admin/addcat" dmx-on:success="getCats.load()">
+                <div class="form-group row">
+                    <div class="col-NaN col-md-NaN col-9">
+                        <input id="newcat" name="description" type="text" class="form-control">
+                    </div>
+                    <div class="d-flex justify-content-end col-3"><button id="addcategory" class="btn bg-success" type="submit" dmx-on:click="getCats.load()">Add</button></div>
+                </div>
+            </form>
+            <!-- Form to add subcategory -->
+            <form is="dmx-serverconnect-form" id="addsubcat" method="post" action="../api/admin/addsubcat">
+                <div class="form-group row">
+                    <div class="col d-flex flex-row justify-content-around">
+                        <select id="existingcat" class="form-control" name="cat" data-msg-required="" dmx-bind:options="getCats.data.query" optiontext="description" optionvalue="id"></select>
+                    </div>
+                    <div class="col"><input id="newsubcat" name="description" type="text" class="form-control"></div>
+                    <div class="d-flex justify-content-end col-3"><button id="addsubcategory" class="btn bg-success" type="submit" dmx-on:click="getSubcats.load()">Add</button></div>
+                </div>
+            </form>
+            <!-- Form to delete category -->
+            <form is="dmx-serverconnect-form" id="removecat" action="../api/admin/removecat">
+                <div class="form-group row">
+                    <div class="col-NaN col-md-NaN col-9">
+                        <select id="cat" class="form-control" dmx-bind:options="getCats.data.query" optiontext="description" optionvalue="id" name="cat">
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end col-3"><button id="removecategory" class="btn bg-danger" type="submit" dmx-on:click="getCats.load({})">Remove</button></div>
+                </div>
+            </form>
+            <!-- Form to delete subcategory -->
+            <form is="dmx-serverconnect-form" id="removesubcat" action="../api/admin/removesubcat">
+                <div class="form-group row">
+                    <div class="col d-flex flex-row justify-content-around">
+                        <select id="existingcat2" class="form-control" dmx-bind:options="getCats.data.query" optiontext="description" optionvalue="id" name="cat"></select>
+                    </div>
+                    <div class="col">
+                        <select id="select2" class="form-control" dmx-bind:options="getSubcats.data.getSubcatsOfCatId" optiontext="description" optionvalue="id" name="subcat">
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end col-3"><button id="removesubcategory" class="btn bg-danger" type="submit" dmx-on:click="getSubcats.load({cat: existingcat2.value})">Remove</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

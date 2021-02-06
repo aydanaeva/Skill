@@ -1,0 +1,24 @@
+{
+  "bootstrap4": {
+    "basic": {
+      "warning": "#eacf0d",
+      "headings-font-family": "Poiret One:400",
+      "enable-gradients": true,
+      "primary": "#90C9D6",
+      "secondary": "#82B0BE",
+      "success": "#8AC08C",
+      "danger": "#F57070",
+      "info": "#0F81C7",
+      "light": "#E5E5E5",
+      "dark": "#222222",
+      "enable-shadows": true,
+      "font-family-base": "Roboto:300",
+      "enable-responsive-font-sizes": true,
+      "font-family-sans-serif": "Roboto:300",
+      "body-color": "#57595c"
+    },
+    "advanced": {
+      "gray-300": "#e0e0e0"
+    }
+  }
+}

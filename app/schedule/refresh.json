@@ -1,0 +1,44 @@
+{
+  "settings": {
+    "options": {
+      "rule": "* * * * * *"
+    }
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "refresh4",
+        "module": "sockets",
+        "action": "refresh",
+        "options": {
+          "action": "user/fetchUserData"
+        },
+        "output": false
+      },
+      {
+        "name": "refresh6",
+        "module": "sockets",
+        "action": "refresh",
+        "options": {
+          "action": "offers/fetchUserPostedOffers"
+        }
+      },
+      {
+        "name": "refresh7",
+        "module": "sockets",
+        "action": "refresh",
+        "options": {
+          "action": "offers/newPostedOffers"
+        }
+      },
+      {
+        "name": "refresh8",
+        "module": "sockets",
+        "action": "refresh",
+        "options": {
+          "action": "offers/fetchUserPendingOffers"
+        }
+      }
+    ]
+  }
+}

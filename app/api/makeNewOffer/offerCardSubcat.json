@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "subcat"
+      },
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "query",
+      "module": "dbconnector",
+      "action": "select",
+      "options": {
+        "connection": "db",
+        "sql": {
+          "type": "SELECT",
+          "columns": [
+            {
+              "table": "subcategory",
+              "column": "description"
+            }
+          ],
+          "table": {
+            "name": "subcategory"
+          },
+          "joins": [],
+          "wheres": {
+            "condition": "AND",
+            "rules": [
+              {
+                "id": "subcategory.id",
+                "field": "subcategory.id",
+                "type": "double",
+                "operator": "equal",
+                "value": "{{$_GET.subcat}}",
+                "data": {
+                  "table": "subcategory",
+                  "column": "id",
+                  "type": "number"
+                },
+                "operation": "="
+              }
+            ],
+            "conditional": null,
+            "valid": true
+          },
+          "query": "SELECT description\nFROM subcategory\nWHERE id = :P1 /* {{$_GET.subcat}} */",
+          "params": [
+            {
+              "operator": "equal",
+              "type": "expression",
+              "name": ":P1",
+              "value": "{{$_GET.subcat}}"
+            }
+          ]
+        }
+      },
+      "output": true,
+      "meta": [
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ],
+      "outputType": "array"
+    }
+  }
+}

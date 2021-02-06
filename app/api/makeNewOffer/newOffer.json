@@ -1,0 +1,317 @@
+{
+  "meta": {
+    "$_POST": [
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {
+              "message": "Please specify take category"
+            }
+          }
+        },
+        "name": "takeCategory"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {
+              "message": "Please specify give category."
+            }
+          }
+        },
+        "name": "giveCategory"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {
+              "message": "Please specify take subcategory."
+            }
+          }
+        },
+        "name": "takeSubcategory"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {
+              "message": "Please specify give subcategory."
+            }
+          }
+        },
+        "name": "giveSubcategory"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {
+              "message": "Please specify take level."
+            }
+          }
+        },
+        "name": "takeLevel"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {
+              "message": "Please specify give level."
+            }
+          }
+        },
+        "name": "giveLevel"
+      },
+      {
+        "type": "text",
+        "name": "description"
+      },
+      {
+        "type": "file",
+        "name": "image1",
+        "sub": [
+          {
+            "type": "text",
+            "name": "name"
+          },
+          {
+            "type": "text",
+            "name": "type"
+          },
+          {
+            "type": "number",
+            "name": "size"
+          },
+          {
+            "type": "text",
+            "name": "error"
+          }
+        ],
+        "outputType": "file"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "isPending",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": 1
+        }
+      },
+      {
+        "name": "isApproved",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": 0
+        }
+      },
+      {
+        "name": "upload1",
+        "module": "upload",
+        "action": "upload",
+        "options": {
+          "path": "/public/assets/images",
+          "replaceSpace": true,
+          "replaceDiacritics": true,
+          "asciiOnly": true
+        },
+        "meta": [
+          {
+            "name": "name",
+            "type": "text"
+          },
+          {
+            "name": "path",
+            "type": "text"
+          },
+          {
+            "name": "url",
+            "type": "text"
+          },
+          {
+            "name": "type",
+            "type": "text"
+          },
+          {
+            "name": "size",
+            "type": "text"
+          },
+          {
+            "name": "error",
+            "type": "number"
+          }
+        ],
+        "outputType": "array"
+      },
+      {
+        "name": "addOffer",
+        "module": "dbupdater",
+        "action": "insert",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "insert",
+            "values": [
+              {
+                "table": "offer",
+                "column": "userId",
+                "type": "text",
+                "value": "{{identity}}"
+              },
+              {
+                "table": "offer",
+                "column": "datetime",
+                "type": "datetime",
+                "value": "{{NOW}}"
+              },
+              {
+                "table": "offer",
+                "column": "takeCategory",
+                "type": "text",
+                "value": "{{$_POST.takeCategory}}"
+              },
+              {
+                "table": "offer",
+                "column": "giveCategory",
+                "type": "text",
+                "value": "{{$_POST.giveCategory}}"
+              },
+              {
+                "table": "offer",
+                "column": "takeSubcategory",
+                "type": "text",
+                "value": "{{$_POST.takeSubcategory}}"
+              },
+              {
+                "table": "offer",
+                "column": "giveSubcategory",
+                "type": "text",
+                "value": "{{$_POST.giveSubcategory}}"
+              },
+              {
+                "table": "offer",
+                "column": "takeLevel",
+                "type": "text",
+                "value": "{{$_POST.takeLevel}}"
+              },
+              {
+                "table": "offer",
+                "column": "giveLevel",
+                "type": "text",
+                "value": "{{$_POST.giveLevel}}"
+              },
+              {
+                "table": "offer",
+                "column": "isApproved",
+                "type": "boolean",
+                "value": "{{isApproved}}"
+              },
+              {
+                "table": "offer",
+                "column": "isPending",
+                "type": "boolean",
+                "value": "{{isPending}}"
+              },
+              {
+                "table": "offer",
+                "column": "description",
+                "type": "text",
+                "value": "{{$_POST.description}}"
+              },
+              {
+                "table": "offer",
+                "column": "image1",
+                "type": "text",
+                "value": "{{upload1[0].name}}"
+              }
+            ],
+            "table": "offer",
+            "returning": "id",
+            "query": "INSERT INTO offer\n(userId, datetime, takeCategory, giveCategory, takeSubcategory, giveSubcategory, takeLevel, giveLevel, isApproved, isPending, description, image1) VALUES (:P1 /* {{identity}} */, :P2 /* {{NOW}} */, :P3 /* {{$_POST.takeCategory}} */, :P4 /* {{$_POST.giveCategory}} */, :P5 /* {{$_POST.takeSubcategory}} */, :P6 /* {{$_POST.giveSubcategory}} */, :P7 /* {{$_POST.takeLevel}} */, :P8 /* {{$_POST.giveLevel}} */, :P9 /* {{isApproved}} */, :P10 /* {{isPending}} */, :P11 /* {{$_POST.description}} */, :P12 /* {{upload1[0].name}} */)",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{identity}}"
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{NOW}}"
+              },
+              {
+                "name": ":P3",
+                "type": "expression",
+                "value": "{{$_POST.takeCategory}}"
+              },
+              {
+                "name": ":P4",
+                "type": "expression",
+                "value": "{{$_POST.giveCategory}}"
+              },
+              {
+                "name": ":P5",
+                "type": "expression",
+                "value": "{{$_POST.takeSubcategory}}"
+              },
+              {
+                "name": ":P6",
+                "type": "expression",
+                "value": "{{$_POST.giveSubcategory}}"
+              },
+              {
+                "name": ":P7",
+                "type": "expression",
+                "value": "{{$_POST.takeLevel}}"
+              },
+              {
+                "name": ":P8",
+                "type": "expression",
+                "value": "{{$_POST.giveLevel}}"
+              },
+              {
+                "name": ":P9",
+                "type": "expression",
+                "value": "{{isApproved}}"
+              },
+              {
+                "name": ":P10",
+                "type": "expression",
+                "value": "{{isPending}}"
+              },
+              {
+                "name": ":P11",
+                "type": "expression",
+                "value": "{{$_POST.description}}"
+              },
+              {
+                "name": ":P12",
+                "type": "expression",
+                "value": "{{upload1[0].name}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "identity",
+            "type": "text"
+          },
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

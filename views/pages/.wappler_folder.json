@@ -1,0 +1,42 @@
+{
+  "test.ejs": {
+    "layoutPage": "Account",
+    "description": ""
+  },
+  "UserPage.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "Account.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "Settings.ejs": {
+    "layoutPage": "",
+    "description": ""
+  },
+  "Offers.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "AdminRequests.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "Home.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "UserOffers.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "Requests.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  },
+  "Comments.ejs": {
+    "layoutPage": "Main",
+    "description": ""
+  }
+}

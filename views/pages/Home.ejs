@@ -1,0 +1,172 @@
+<!-- Wappler include head-page="layouts/Main" id="Home" role="navigation" class="backgroud-layout-content" components="{dmxDataTraversal:{},dmxStateManagement:{},dmxAutocomplete:{},dmxDatePicker:{},dmxTyped:{},dmxValidator:{},dmxFormatter:{},dmxBootstrap4Modal:{},dmxGeolocation:{},dmxDropzone:{},dmxSmoothScroll:{},dmxSummernote:{},dmxSwiper:{}}" fontawesome_5pro="cdn" bootstrap4="local" is="dmx-app" appconnect="local" jquery_slim_33="cdn" -->
+
+<meta name="ac:route" content="/home">
+<!-- Variable that changes the sorting of the new offers feed. If var == 0 -> Date ASC; If var == 1 -> Date DESC; -->
+<dmx-value id="datesortvar" dmx-bind:value="0"></dmx-value>
+<!-- Server connect to display the recently published offers -->
+<dmx-serverconnect id="newOffers" url="../api/offers/newPostedOffers" site="Skill" dmx-param:sort="datesortvar.value"></dmx-serverconnect>
+<!-- Server connect to comment on the offer -->
+<dmx-serverconnect id="comment" url="../api/user/comment" site="Skill" dmx-param:comment="newoffersrepeat[0].fullNewoffer.mycomment.value" dmx-param:offerid="newoffersrepeat[0].id" noload></dmx-serverconnect>
+
+<!-- Home page consists of 1 row to display the repeating cards of recently posted offers by all users. In order to leave a comment and read comments on the Offer, User needs to view full offer. This is achieved using Dynamic modal and Data Detail property inside of the modal-->
+
+<!-- Flex container to maintain responsiveness -->
+<div class="d-flex flex-lg-row flex-lg-nowrap card-class-login flex-sm-column justify-content-sm-around align-items-sm-center flex-xl-row align-items-center h-100 flex-column align-content-start justify-content-center">
+
+    <!-- Modal to view full offer -->
+    <div class="modal" id="fullOffer" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <!-- Modal's header that displays Offer #id -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Offer #{{content.fullOffer.data_detail1.data.id}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!-- Modal's body -->
+                <div class="modal-body">
+                    <!-- Flex container with Data Detail property to properly fetch data from the repeated card -->
+                    <div class="d-flex flex-column" is="dmx-data-detail" id="data_detail1" dmx-bind:data="newOffers.data.repeat" key="id">
+                        <!-- Row to display the avatar, name and surname of the user, who published the offer, as well as the "I give/I take" levels and subcategories -->
+                        <div class="row border-bottom border-light pb-3">
+                            <div class="col-2">
+                                <img dmx-bind:src="'/assets/images/'+fullOffer.data_detail1.data.user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                            </div>
+                            <div class="col align-self-center text-left">
+                                <p class="font-weight-bolder mb-0 small">{{fullOffer.data_detail1.data.user[0].name+" "+fullOffer.data_detail1.data.user[0].surname}}</p>
+                                <p class="small font-weight-bolder mb-0">@{{fullOffer.data_detail1.data.user[0].username}}</p>
+                            </div>
+                            <div class="d-flex flex-row justify-content-around col align-items-center">
+                                <div class="d-flex bg-light offer-subcat-level flex-row align-items-center justify-content-around pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                        dmx-style:color="fullOffer.data_detail1.data.giveLevel == 1 ? 'red' : (fullOffer.data_detail1.data.giveLevel == 2 ? 'yellow' : 'green');"></i>
+                                    <p class="small mb-0">{{fullOffer.data_detail1.data.givesubcat[0].description}}</p>
+                                </div>
+                                <i class="fal fa-arrow-right"></i>
+                                <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                        dmx-style:color="fullOffer.data_detail1.data.takeLevel == 1 ? 'red' : (fullOffer.data_detail1.data.takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                    <p class="small mb-0">{{fullOffer.data_detail1.data.takesubcat[0].description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Row to display the image and description of the offer -->
+                        <div class="row mt-3">
+                            <div class="col align-self-center text-center">
+                                <img dmx-bind:src="'assets/images/'+fullOffer.data_detail1.data.image1" class="img-fluid rounded" height="300px" width="350px">
+                            </div>
+                        </div>
+                        <div class="row mt-3 ml-2 mr-2">
+                            <div class="border rounded align-self-center col-12 pl-0 pr-0">
+                                <p class="card-text text-left font-size-description ml-3">{{fullOffer.data_detail1.data.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Flex container that uses the Repeat Region property to dispaly comments on the Offer -->
+                    <div class="d-flex flex-column justify-content-center" dmx-repeat:repeat1="fullOffer.data_detail1.data.repeat1">
+                        <!-- Row to display avatar and username of the user, who posted the comment. The row is repeated and each row is a new comment -->
+                        <div class="row w-100 align-items-center border-bottom border-light pt-3 pb-3">
+                            <div class="col-2">
+                                <img class="rounded-circle" wappler-command="updateImage" dmx-bind:src="'assets/images/'+usercomment[0].avatar" width="50px" height="50px">
+                            </div>
+                            <div class="col-2 text-left font-weight-bolder">
+                                <p wappler-command="editContent" class="small mb-0">@{{usercomment[0].username}}</p>
+                            </div>
+                            <div class="col-8">
+                                <p wappler-command="editContent" wappler-empty="undefined" class="mb-0">{{comment}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal's footer -->
+                <div class="modal-footer">
+                    <!-- Flex container with input for comment and button to send it-->
+                    <div class="d-flex w-100">
+                        <input id="mycomment" name="comment" type="text" class="form-control" placeholder="Comment here..."><button id="sendcomment" class="btn"
+                            dmx-on:click="comment.load({offerid: data_detail1.data.id, comment: mycomment.value});newOffers.load({})"><i class="fal fa-paper-plane star-icon fa-lg"></i></button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row/col is needed to maintain responsivess on small screens -->
+    <div class="row">
+        <div class="col">
+            <!-- Card (aka container) for new posted offers from all users -->
+            <div class="card search-card">
+                <!-- Card's header with the title and button to switch "datesortvar" from 0 to 1 (thus change sorting of the displayed offers) -->
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <p class="mb-0">New Offers</p>
+                        <button id="datesortbtn" class="btn" dmx-on:click="datesortvar.setValue(datesortvar.value == 0 ? 1 : 0)"><i class="fal fa-sort-alt"></i></button>
+                    </div>
+                </div>
+                <!-- Card's body. The "max-height-card" css applies max height and overflow-y: scroll -->
+                <div class="card-body max-height-card text-center">
+                    <!-- Row with repeating children for each posted offer -->
+                    <div class="row mb-3 justify-content-around align-items-center" dmx-bind:repeat="newOffers.data.repeat" is="dmx-repeat" id="newoffersrepeat">
+                        <!-- Column is turned to flex container to maintain responsiveness -->
+                        <div class="col d-flex justify-content-center">
+                            <!-- Card that represnets the Offer -->
+                            <div class="card h-100">
+                                <!-- Card's body -->
+                                <div class="card-body">
+                                    <!-- Row to display avatar, name, surname and username of the user, who posted the offer -->
+                                    <div class="row border-bottom border-light pb-2 align-items-start justify-content-around">
+                                        <div class="col-2 align-self-center">
+                                            <img dmx-bind:src="'/assets/images/'+user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                                        </div>
+                                        <div class="col-10 align-self-center text-left">
+                                            <p class="font-weight-bolder mb-0 small">{{user[0].name+' '+user[0].surname}}</p>
+                                            <p class="small font-weight-bolder mb-0">@{{user[0].username}}</p>
+                                        </div>
+                                    </div>
+                                    <!-- Row to display the "I give/I take" levels and subcategories of the offer, as well as ison to popup Modal to view full Offer -->
+                                    <div class="row mt-3">
+                                        <div class="d-flex flex-row align-items-baseline col justify-content-start">
+                                            <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center mr-1 pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                                    dmx-style:color="giveLevel == 1 ? 'red' : (giveLevel == 2 ? 'yellow' : 'green')"></i>
+                                                <p class="small mb-0">{{givesubcat[0].description}}</p>
+                                            </div>
+                                            <i class="fal fa-arrow-right"></i>
+                                            <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center ml-1 pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                                    dmx-style:color.important="takeLevel == 1 ? 'red' : (takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                                <p class="small mb-0">{{takesubcat[0].description}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right col-2 d-flex">
+                                            <button id="comments1" class="btn pl-1 pr-1" data-target="#fullNewoffer" dmx-on:click="fullOffer.show();fullOffer.data_detail1.select(id)"><i class="fal fa-comment-alt-dots star-icon fa-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Row to display the image of the offer -->
+                                    <div class="row mt-3">
+                                        <div class="col align-self-center text-center d-flex justify-content-center">
+                                            <img dmx-bind:src="'assets/images/'+image1" class="rounded" width="350px" height="300px">
+                                        </div>
+                                    </div>
+                                    <!-- Row to display ID the offer -->
+                                    <div class="row mt-1">
+                                        <div class="col text-right text-dark">
+                                            <p class="card-text text-right text-muted">#{{id}}</p>
+                                        </div>
+                                    </div>
+                                    <!-- Row to display description of the offer -->
+                                    <div class="row">
+                                        <div class="col border align-self-center rounded">
+                                            <p class="card-text text-left font-size-description">{{description}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card's footer -->
+                <div class="card-footer">
+                    <p class="mb-0 text-center">Start by making an offer!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

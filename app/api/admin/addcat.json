@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "$_POST": [
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {}
+          }
+        },
+        "name": "description"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "catdesc",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_POST.description.lowercase()}}"
+        }
+      },
+      {
+        "name": "validate",
+        "module": "validator",
+        "action": "validate",
+        "options": {
+          "data": [
+            {
+              "name": "unique_cat",
+              "value": "{{catdesc}}",
+              "rules": {
+                "db:notexists": {
+                  "param": {
+                    "connection": "db",
+                    "table": "category",
+                    "column": "description"
+                  },
+                  "message": "Category already exists"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "insert",
+        "module": "dbupdater",
+        "action": "insert",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "insert",
+            "values": [
+              {
+                "table": "category",
+                "column": "description",
+                "type": "text",
+                "value": "{{catdesc}}"
+              }
+            ],
+            "table": "category",
+            "returning": "id",
+            "query": "INSERT INTO category\n(description) VALUES (:P1 /* {{catdesc}} */)",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{catdesc}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "identity",
+            "type": "text"
+          },
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

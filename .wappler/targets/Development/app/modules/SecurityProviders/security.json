@@ -1,0 +1,37 @@
+{
+  "name": "security",
+  "module": "auth",
+  "action": "provider",
+  "options": {
+    "connection": "db",
+    "passwordVerify": true,
+    "provider": "Database",
+    "secret": "TU75eFCFucbhj8",
+    "secure": true,
+    "users": {
+      "table": "user",
+      "identity": "id",
+      "username": "username",
+      "password": "password"
+    },
+    "permissions": {
+      "admin": {
+        "table": "user",
+        "identity": "id",
+        "conditions": [
+          {
+            "column": "isAdmin",
+            "operator": "=",
+            "value": "1"
+          }
+        ]
+      }
+    }
+  },
+  "meta": [
+    {
+      "name": "identity",
+      "type": "text"
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+<!-- Wappler include jquery_slim_33="cdn" bootstrap4="local" is="dmx-app" id="OfferCard" appconnect="local" class="d-flex" head-page="layouts/Main" fontawesome_5pro="cdn" components="{dmxSlideshow:{},dmxDropzone:{},dmxBootstrap4Modal:{}}" -->
+
+<dmx-serverconnect id="getUserFromComment" url="../api/offers/getUserInfoFromComment" site="Skill" dmx-param:userid="offerform.data.comments[0].userId"></dmx-serverconnect>
+<dmx-serverconnect id="comment" url="../api/user/comment" site="Skill" dmx-param:offerid="offerform.data.offer[0].id"></dmx-serverconnect>
+<div class="d-flex">
+    <div class="row">
+        <div class="col-2">
+            <img dmx-bind:src="content.offerform.data.user[0].avatar" class="rounded-circle img-fluid">
+
+        </div>
+        <div class="col">
+            <p class="font-weight-bolder mb-0">{{content.offerform.data.user[0].name+" "+content.offerform.data.user[0].surname}}</p>
+            <p class="small font-weight-bolder">@{{content.offerform.data.user[0].username}}</p>
+        </div>
+        <div class="d-flex flex-row align-items-baseline col justify-content-end">
+            <div class="d-block inline bg-light offer-subcat-level"><i class="fas fa-circle fa-xs level-circle"
+                    dmx-style:color="content.offerform.data.offer[0].giveLevel == 1 ? 'red' : (content.offerform.data.offer[0].giveLevel == 2 ? 'yellow' : 'green');"></i>
+                <p class="small mb-0">{{content.offerform.data.givesubcat[0].description}}</p>
+            </div><i class="fal fa-arrow-right"></i>
+            <div class="d-block bg-light offer-subcat-level"><i class="fas fa-circle fa-xs level-circle"
+                    dmx-style:color="content.offerform.data.offer[0].takeLevel == 1 ? 'red' : (content.offerform.data.offer[0].takeLevel == 2 ? 'yellow' : 'green');"></i>
+                <p class="small mb-0">{{content.offerform.data.takesubcat[0].description}}</p>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col text-right">
+            <i class="fal fa-star star-icon"></i>
+            <i class="fal fa-star star-icon"></i>
+            <i class="fal fa-star star-icon"></i>
+            <i class="fal fa-star star-icon"></i>
+            <i class="fal fa-star star-icon"></i>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col">
+            <div is="dmx-swiper" id="swiper1" dmx-bind:slides="getReviewOffers.data.query[0].image1+getReviewOffers.data.query[0].image2+getReviewOffers.data.query[0].image3" dmx-bind:initial-slide="getReviewOffers.data.query[0].image1">
+                <div class="swiper-slide"></div>
+                <div class="swiper-slide"></div>
+                <div class="swiper-slide"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col text-right text-dark">
+            <p class="card-text text-right text-muted">#{{offerform.data.offer[0].id}}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p class="card-text text-center">{{content.offerform.data.offer[0].description}}</p>
+        </div>
+        <div class="col-4">
+            <button id="comments" class="btn" data-toggle="modal" data-target="#fulloffer"><i class="fal fa-comment-alt-dots star-icon fa-lg"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="fulloffer" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Offer #{{offerform.data.offer[0].id}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form site="Skill" autosubmit="true" id="fullofferform">
+                    <div class="form-group row">
+                        <div class="col-2">
+                            <img dmx-bind:src="getUserFromComment.data.username[0].avatar" class="rounded-circle img-fluid">
+
+                        </div>
+                        <div class="col">
+                            <p class="font-weight-bolder mb-0">{{getUserFromComment.data.username[0].name+" "+getUserFromComment.data.username[0].surname}}</p>
+                            <p class="small font-weight-bolder">@{{getUserFromComment.data.username[0].username}}</p>
+                        </div>
+                        <div class="d-flex flex-row align-items-baseline col justify-content-end">
+                            <div class="d-block inline bg-light offer-subcat-level"><i class="fas fa-circle fa-xs level-circle"
+                                    dmx-style:color="getReviewOffers.data.query[0].giveLevel == 1 ? 'red' : (getReviewOffers.data.query[0].giveLevel == 2 ? 'yellow' : 'green');"></i>
+                                <p class="small mb-0">{{getSubcatFromIDOffer.data.query[0].description}}</p>
+                            </div><i class="fal fa-arrow-right"></i>
+                            <div class="d-block bg-light offer-subcat-level"><i class="fas fa-circle fa-xs level-circle"
+                                    dmx-style:color="getReviewOffers.data.query[0].takeLevel == 1 ? 'red' : (getReviewOffers.data.query[0].takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                <p class="small mb-0">{{getSubcatFromIDOffer.data.query[0].description}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group row">
+                        <div class="col text-right">
+                            <i class="fal fa-star star-icon"></i>
+                            <i class="fal fa-star star-icon"></i>
+                            <i class="fal fa-star star-icon"></i>
+                            <i class="fal fa-star star-icon"></i>
+                            <i class="fal fa-star star-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+
+                        <div class="col">
+                            <div is="dmx-swiper" id="swiper2" dmx-bind:slides="getReviewOffers.data.query[0].image1+getReviewOffers.data.query[0].image2+getReviewOffers.data.query[0].image3"
+                                dmx-bind:initial-slide="getReviewOffers.data.query[0].image1">
+                                <div class="swiper-slide"></div>
+                                <div class="swiper-slide"></div>
+                                <div class="swiper-slide"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+
+                        <div class="col">
+                            <p class="card-text text-center">{{getReviewOffers.data.query[0].description}}</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="usercommentrepeat">
+                        <div class="col-2">
+                            <img class="img-fluid rounded-circle" wappler-command="updateImage">
+                            <p wappler-command="editContent">@</p>
+
+                        </div>
+                        <div class="col align-self-start">
+                            <p wappler-command="editContent" wappler-empty="undefined"></p>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex w-100"><input id="mycomment" name="comment" type="text" class="form-control" placeholder="Comment here..."><button id="sendcomment" class="btn" dmx-on:click="comment.load()"><i
+                            class="fal fa-paper-plane star-icon fa-lg"></i></button></div>
+
+
+            </div>
+        </div>
+    </div>
+</div>

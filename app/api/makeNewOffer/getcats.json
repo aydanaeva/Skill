@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "query",
+      "module": "dbconnector",
+      "action": "select",
+      "options": {
+        "connection": "db",
+        "sql": {
+          "type": "SELECT",
+          "columns": [
+            {
+              "table": "category",
+              "column": "*"
+            }
+          ],
+          "table": {
+            "name": "category"
+          },
+          "joins": [],
+          "query": "SELECT *\nFROM category",
+          "params": [],
+          "orders": []
+        }
+      },
+      "meta": [
+        {
+          "name": "id",
+          "type": "text"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ],
+      "outputType": "array",
+      "output": true
+    }
+  }
+}

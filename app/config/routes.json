@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "path": "/user/:id",
+      "url": "",
+      "routeType": "exec",
+      "page": "pages/UserPage",
+      "layout": "Main",
+      "exec": ""
+    },
+    {
+      "path": "/admin",
+      "url": "",
+      "routeType": "page",
+      "page": "pages/AdminRequests",
+      "layout": "Main",
+      "exec": "/api/admin/restrict"
+    },
+    {
+      "path": "/register",
+      "url": "",
+      "routeType": "page",
+      "page": "pages/Register"
+    },
+    {
+      "path": "/login",
+      "page": "pages/login",
+      "routeType": "page"
+    },
+    {
+      "path": "/home",
+      "page": "pages/Home",
+      "layout": "Main",
+      "name": "home page"
+    },
+    {
+      "path": "/offers",
+      "page": "pages/UserOffers",
+      "layout": "Main"
+    },
+    {
+      "path": "/comments",
+      "page": "pages/Comments",
+      "layout": "Main"
+    }
+  ],
+  "layouts": {
+    "Main": {
+      "exec": ""
+    }
+  }
+}

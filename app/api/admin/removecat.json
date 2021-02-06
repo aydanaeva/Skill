@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "cat"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "deleteSubcats",
+        "module": "dbupdater",
+        "action": "delete",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "delete",
+            "table": "subcategory",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "categoryId",
+                  "field": "categoryId",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.cat}}",
+                  "data": {
+                    "column": "categoryId"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "DELETE\nFROM subcategory\nWHERE categoryId = :P1 /* {{$_GET.cat}} */",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.cat}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "deleteCats",
+        "module": "dbupdater",
+        "action": "delete",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "delete",
+            "table": "category",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "id",
+                  "field": "id",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.cat}}",
+                  "data": {
+                    "column": "id"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "DELETE\nFROM category\nWHERE id = :P1 /* {{$_GET.cat}} */",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.cat}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

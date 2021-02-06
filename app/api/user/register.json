@@ -1,0 +1,345 @@
+{
+  "meta": {
+    "$_POST": [
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {}
+          }
+        },
+        "name": "name"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {}
+          }
+        },
+        "name": "surname"
+      },
+      {
+        "type": "text",
+        "name": "telephone"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {}
+          }
+        },
+        "name": "email"
+      },
+      {
+        "type": "text",
+        "name": "country"
+      },
+      {
+        "type": "text",
+        "name": "avatar"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {}
+          }
+        },
+        "name": "username"
+      },
+      {
+        "type": "number",
+        "name": "rating"
+      },
+      {
+        "type": "boolean",
+        "name": "isAdmin"
+      },
+      {
+        "type": "text",
+        "name": "bio"
+      },
+      {
+        "type": "datetime",
+        "name": "datetime"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {},
+            "core:equalTo": {
+              "param": "passwordR"
+            }
+          }
+        },
+        "name": "password"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {
+            "core:required": {}
+          }
+        },
+        "name": "passwordR"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "email",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_POST.email.lowercase()}}"
+        }
+      },
+      {
+        "name": "username",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_POST.username.lowercase()}}"
+        }
+      },
+      {
+        "name": "isAdmin",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": 0
+        },
+        "outputType": "boolean"
+      },
+      {
+        "name": "password",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_POST.password.sha256('sbspo3W9jhd5')}}"
+        }
+      },
+      {
+        "name": "validEmail",
+        "module": "validator",
+        "action": "validate",
+        "options": {
+          "data": [
+            {
+              "name": "uniqueEmail",
+              "value": "{{email}}",
+              "rules": {
+                "db:notexists": {
+                  "param": {
+                    "connection": "db",
+                    "table": "user",
+                    "column": "email"
+                  },
+                  "message": "This email looks familiar. Try login?"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "validUsername",
+        "module": "validator",
+        "action": "validate",
+        "options": {
+          "data": [
+            {
+              "name": "uniqueUsername",
+              "value": "{{username}}",
+              "rules": {
+                "db:notexists": {
+                  "param": {
+                    "connection": "db",
+                    "table": "user",
+                    "column": "username"
+                  },
+                  "message": "Username is not available. Please try another one :)"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "insert",
+        "module": "dbupdater",
+        "action": "insert",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "insert",
+            "values": [
+              {
+                "table": "user",
+                "column": "name",
+                "type": "text",
+                "value": "{{$_POST.name}}"
+              },
+              {
+                "table": "user",
+                "column": "surname",
+                "type": "text",
+                "value": "{{$_POST.surname}}"
+              },
+              {
+                "table": "user",
+                "column": "telephone",
+                "type": "text",
+                "value": "{{$_POST.telephone}}"
+              },
+              {
+                "table": "user",
+                "column": "email",
+                "type": "text",
+                "value": "{{email}}"
+              },
+              {
+                "table": "user",
+                "column": "country",
+                "type": "text",
+                "value": "{{$_POST.country}}"
+              },
+              {
+                "table": "user",
+                "column": "avatar",
+                "type": "text",
+                "value": "{{$_POST.avatar}}"
+              },
+              {
+                "table": "user",
+                "column": "username",
+                "type": "text",
+                "value": "{{username}}"
+              },
+              {
+                "table": "user",
+                "column": "rating",
+                "type": "number",
+                "value": "{{$_POST.rating}}"
+              },
+              {
+                "table": "user",
+                "column": "isAdmin",
+                "type": "boolean",
+                "value": "{{isAdmin}}"
+              },
+              {
+                "table": "user",
+                "column": "bio",
+                "type": "text",
+                "value": "{{$_POST.bio}}"
+              },
+              {
+                "table": "user",
+                "column": "datetime",
+                "type": "datetime",
+                "value": "{{NOW}}"
+              },
+              {
+                "table": "user",
+                "column": "password",
+                "type": "text",
+                "value": "{{$_POST.password}}"
+              }
+            ],
+            "table": "user",
+            "returning": "id",
+            "query": "INSERT INTO user\n(name, surname, telephone, email, country, avatar, username, rating, isAdmin, bio, datetime, password) VALUES (:P1 /* {{$_POST.name}} */, :P2 /* {{$_POST.surname}} */, :P3 /* {{$_POST.telephone}} */, :P4 /* {{email}} */, :P5 /* {{$_POST.country}} */, :P6 /* {{$_POST.avatar}} */, :P7 /* {{username}} */, :P8 /* {{$_POST.rating}} */, :P9 /* {{isAdmin}} */, :P10 /* {{$_POST.bio}} */, :P11 /* {{NOW}} */, :P12 /* {{$_POST.password}} */)",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_POST.name}}"
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{$_POST.surname}}"
+              },
+              {
+                "name": ":P3",
+                "type": "expression",
+                "value": "{{$_POST.telephone}}"
+              },
+              {
+                "name": ":P4",
+                "type": "expression",
+                "value": "{{email}}"
+              },
+              {
+                "name": ":P5",
+                "type": "expression",
+                "value": "{{$_POST.country}}"
+              },
+              {
+                "name": ":P6",
+                "type": "expression",
+                "value": "{{$_POST.avatar}}"
+              },
+              {
+                "name": ":P7",
+                "type": "expression",
+                "value": "{{username}}"
+              },
+              {
+                "name": ":P8",
+                "type": "expression",
+                "value": "{{$_POST.rating}}"
+              },
+              {
+                "name": ":P9",
+                "type": "expression",
+                "value": "{{isAdmin}}"
+              },
+              {
+                "name": ":P10",
+                "type": "expression",
+                "value": "{{$_POST.bio}}"
+              },
+              {
+                "name": ":P11",
+                "type": "expression",
+                "value": "{{NOW}}"
+              },
+              {
+                "name": ":P12",
+                "type": "expression",
+                "value": "{{$_POST.password}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "identity",
+            "type": "text"
+          },
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "identity",
+        "module": "auth",
+        "action": "login",
+        "options": {
+          "provider": "security",
+          "remember": ""
+        },
+        "output": true,
+        "meta": []
+      }
+    ]
+  }
+}

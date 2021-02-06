@@ -1,0 +1,15 @@
+{
+  "name": "db",
+  "module": "dbconnector",
+  "action": "connect",
+  "options": {
+    "client": "mysql",
+    "connection": {
+      "host": "${./config.db_development.HOST}",
+      "port": "${./config.db_development.PORT}",
+      "user": "${./config.db_development.USER}",
+      "password": "${./config.db_development.PASSWORD}",
+      "database": "skill"
+    }
+  }
+}

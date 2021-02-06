@@ -1,0 +1,316 @@
+<!-- Wappler include head-page="layouts/Main" id="UserPage" role="navigation" class="backgroud-layout-content" components="{dmxDataTraversal:{},dmxStateManagement:{},dmxAutocomplete:{},dmxDatePicker:{},dmxTyped:{},dmxValidator:{},dmxFormatter:{},dmxBootstrap4Modal:{},dmxGeolocation:{},dmxDropzone:{},dmxSmoothScroll:{},dmxSockets:{}}" fontawesome_5pro="cdn" bootstrap4="local" is="dmx-app" appconnect="local" jquery_slim_33="cdn" -->
+
+<dmx-serverconnect id="fetchUser" url="../api/user/fetchUserData" site="Skill" dmx-param:userid=""></dmx-serverconnect>
+
+<!-- UserPage consists of 2 cards: one with user's details and the other one with the user's posted comments  -->
+
+<!-- Server connect to fetch posted offers of the user -->
+<dmx-serverconnect id="fetchUserPostedOffers" url="../api/offers/fetchUserPostedOffers" site="Skill" dmx-param:isapproved="1" dmx-param:ispending="0"></dmx-serverconnect>
+<meta name="ac:route" content="/user/:id">
+
+<!-- Flex container to maintain responsiveness -->
+<div class="d-flex h-100 w-100 flex-md-row align-items-md-center justify-content-md-around card-class-login justify-content-center align-items-center flex-wrap align-content-around flex-column">
+
+    <!-- Modal for User setting -->
+    <div class="modal" id="settings" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <!-- Modal's header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Settings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!-- Modal's body. Consists of 3 Forms: form to change profile picture, form to change user detalis and form to change password -->
+                <div class="modal-body settings-card">
+
+                    <!-- Form to change user profile picture -->
+                    <form id="settingsprofilepic" method="post" is="dmx-serverconnect-form" action="../api/user/changeProfilePicture" site="Skill">
+                        <p class="text-center font-weight-bolder">Change profile picture</p>
+                        <!-- Horizontal Form Group with Dropbox for image -->
+                        <div class="form-group row">
+                            <div class="align-self-center col-sm-12">
+                                <input type="file" class="form-control" id="avatar" name="avatar" aria-describedby="input1_help" is="dmx-dropzone">
+                                <small id="input1_help" class="form-text text-muted">Select here your image for upload.</small>
+                            </div>
+                        </div>
+                        <!-- Button Group (Cancel and Submit) -->
+                        <div class="btn-group w-100" role="group" aria-label="Button Group"><button id="cancel1" class="btn" type="reset"><i class="fa-times fal cancel-icon fa-lg"></i></button><button id="submit1" class="btn" type="submit"><i
+                                    class="fal fa-check submit-icon fa-lg"></i></button></div>
+                    </form>
+
+                    <!-- Form to change userdetails -->
+                    <form is="dmx-serverconnect-form" id="settingsuserdetails" action="../api/user/changeUserDetails" site="Skill" method="post" dmx-on:success="signoutrefer.alert('user has been updated')">
+                        <p class="text-center font-weight-bolder">Change user details
+                        </p>
+                        <!-- Horizontal Form Group for email input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline"><i class="fal fa-envelope icon-style"></i><input id="email" name="email" type="email" class="form-control input-form input-field" data-rule-email=""
+                                    data-msg-required="" dmx-bind:placeholder="fetchUser.data.query[0].email"></div>
+                        </div>
+
+                        <!-- Horizontal Form Group for telephone input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline"><i class="fal fa-phone icon-style"></i><input id="telephone" name="telephone" type="tel" class="form-control input-form input-field" data-msg-required=""
+                                    dmx-bind:placeholder="fetchUser.data.query[0].telephone" placeholder="telephone"></div>
+                        </div>
+                        <!-- Horizontal Form Group for country input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline"><i class="fal fa-map-marker-alt icon-style"></i><input id="country" name="country" type="text" class="form-control input-form input-field" placeholder="country"
+                                    dmx-bind:placeholder="fetchUser.data.query[0].country"></div>
+                        </div>
+                        <!-- Horizontal Form Group for name input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline"><i class="fa-address-card icon-style fal"></i><input id="name" name="name" class="form-control input-form input-field" placeholder="name" data-msg-required=""
+                                    dmx-bind:placeholder="fetchUser.data.query[0].name"></div>
+                        </div>
+                        <!-- Horizontal Form Group for surname input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline"><i class="fa-address-card icon-style fal"></i><input id="surname" name="surname" class="form-control input-form input-field" placeholder="surname" data-msg-required=""
+                                    dmx-bind:placeholder="fetchUser.data.query[0].surname">
+                            </div>
+                        </div>
+                        <!-- Horizontal Form Group for username input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline"><i class="fa-address-card icon-style fal"></i><input id="username" name="username" class="form-control input-form input-field" placeholder="username"
+                                    data-rule-equalto="text2" data-msg-equalto="Passwords do not match." data-msg-required="" dmx-bind:placeholder="fetchUser.data.query[0].username"></div>
+                        </div>
+                        <!-- Button Group (Cancel and Submit) -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-center"><i class="fal fa-comment-alt-edit fa-lg icon-style"></i>
+                                <textarea id="bio" class="form-control" name="bio" dmx-bind:placeholder="fetchUser.data.query[0].bio"></textarea></div>
+                        </div>
+                        <div class="btn-group w-100" role="group" aria-label="Button Group"><button id="cancel" class="btn" type="reset"><i class="fa-times fal cancel-icon fa-lg"></i></button><button id="submit" class="btn" type="submit"><i
+                                    class="fal fa-check submit-icon fa-lg"></i></button>
+                        </div>
+                    </form>
+
+                    <!-- Form to change user password -->
+                    <form id="settingspassword" is="dmx-serverconnect-form" action="../api/user/changeUserPassword" site="Skill" method="post">
+                        <p class="text-center font-weight-bolder">Change password</p>
+                        <!-- Horizontal Form Group for password input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline">
+                                <i class="fal fa-key icon-style"></i><input id="password" name="password" type="password" class="form-control input-form input-field" placeholder="password" data-msg-required=""></div>
+                        </div>
+                        <!-- Horizontal Form Group for repeat password input -->
+                        <div class="form-group row">
+                            <div class="col d-flex flex-row align-items-baseline">
+                                <i class="fal fa-key icon-style"></i><input id="rpassword" name="rpassword" type="password" class="form-control input-form input-field" placeholder="repeat password" data-rule-equalto="text2"
+                                    data-msg-equalto="Passwords do not match." data-msg-required=""></div>
+                        </div>
+                        <!-- Button Group (Cancel and Submit) -->
+                        <div class="btn-group w-100" role="group" aria-label="Button Group"><button id="cancel2" class="btn" dmx-on:click="settings.settingspassword.reset()" type="reset"><i class="fa-times fal cancel-icon fa-lg"></i></button><button
+                                id="submit2" class="btn" dmx-on:click="settings.settingspassword.submit()" type="submit"><i class="fal fa-check submit-icon fa-lg"></i></button></div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal to view full offer -->
+    <div class="modal" id="fullOffer" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal's header that displays Offer #id -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Offer #{{content.fullOffer.data_detail1.data.id}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!-- Modal's body -->
+                <div class="modal-body">
+                    <!-- Flex container with Data Detail property to properly fetch data from the repeated card -->
+                    <div class="d-flex flex-column" is="dmx-data-detail" id="data_detail1" dmx-bind:data="fetchUserPostedOffers.data.repeat" key="id">
+                        <!-- Row to display the avatar, name and surname of the user, who published the offer, as well as the "I give/I take" levels and subcategories -->
+                        <div class="row border-bottom border-light">
+                            <div class="col-2">
+                                <img dmx-bind:src="'/assets/images/'+fullOffer.data_detail1.data.user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                            </div>
+                            <div class="col align-self-center text-left">
+                                <p class="font-weight-bolder mb-0 small">{{fullOffer.data_detail1.data.user[0].name+" "+fullOffer.data_detail1.data.user[0].surname}}</p>
+                                <p class="small font-weight-bolder mb-0">@{{fullOffer.data_detail1.data.user[0].username}}</p>
+                            </div>
+                            <div class="d-flex flex-row justify-content-around col align-items-center">
+                                <div class="d-flex bg-light offer-subcat-level flex-row align-items-center justify-content-around pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                        dmx-style:color="fullOffer.data_detail1.data.giveLevel == 1 ? 'red' : (fullOffer.data_detail1.data.giveLevel == 2 ? 'yellow' : 'green');"></i>
+                                    <p class="small mb-0">{{fullOffer.data_detail1.data.givesubcat[0].description}}</p>
+                                </div>
+                                <i class="fal fa-arrow-right"></i>
+                                <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                        dmx-style:color="fullOffer.data_detail1.data.takeLevel == 1 ? 'red' : (fullOffer.data_detail1.data.takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                    <p class="small mb-0">{{fullOffer.data_detail1.data.takesubcat[0].description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Row to display the image and description of the offer -->
+                        <div class="row mt-3">
+                            <div class="col align-self-center text-center">
+                                <img dmx-bind:src="'assets/images/'+fullOffer.data_detail1.data.image1" class="img-fluid rounded" height="300px" width="350px">
+                            </div>
+                        </div>
+                        <div class="row mt-3 ml-2 mr-2">
+                            <div class="border rounded align-self-center col-12 pl-0 pr-0">
+                                <p class="card-text text-left font-size-description ml-3">{{fullOffer.data_detail1.data.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Flex container that uses the Repeat Region property to dispaly comments on the Offer -->
+                    <div class="d-flex" dmx-repeat:repeat1="fullOffer.data_detail1.data.repeat1">
+                        <!-- Row to display avatar and username of the user, who posted the comment. The row is repeated and each row is a new comment -->
+                        <div class="row w-100 align-items-center border-bottom border-light pt-3 pb-3">
+                            <div class="col-2">
+                                <img class="rounded-circle" wappler-command="updateImage" dmx-bind:src="'assets/images/'+usercomment[0].avatar" width="50px" height="50px">
+                            </div>
+                            <div class="col-2 text-left font-weight-bolder">
+                                <p wappler-command="editContent" class="small mb-0">@{{usercomment[0].username}}</p>
+                            </div>
+                            <div class="col-8">
+                                <p wappler-command="editContent" wappler-empty="undefined" class="mb-0">{{comment}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal's footer -->
+                <div class="modal-footer">
+                    <!-- Flex container with input for comment and button to send it-->
+                    <div class="d-flex w-100">
+                        <input id="mycomment" name="comment" type="text" class="form-control" placeholder="Comment here..."><button id="sendcomment" class="btn"
+                            dmx-on:click="comment.load({offerid: data_detail1.data.id, comment: mycomment.value});newOffers.load({})"><i class="fal fa-paper-plane star-icon fa-lg"></i></button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row/col is needed to maintain responsivess on small screens -->
+    <div class="row align-items-center justify-content-around justify-content-md-around justify-content-lg-around row-cols-9">
+        <div class="col-lg col-xl col-sm-12 col-md col-12">
+            <!-- Card with logged in User's info -->
+            <div class="card search-card">
+                <!-- Card's body -->
+                <div class="card-body">
+                    <!-- Flex container that fetches the user information -->
+                    <div class="d-flex flex-column justify-content-around">
+                        <!-- Row to display the avatar, name, surname and username of the user -->
+                        <div class="row">
+                            <div class="col d-flex flex-column justify-content-center align-items-center">
+                                <img class="rounded-circle" wappler-command="updateImage" dmx-bind:src="'/assets/images/'+fetchUser.data.query[0].avatar" width="100px" height="100px">
+                                <h1 id="sname" class="font-weight-lighter" wappler-command="editContent">{{fetchUser.data.query[0].name+' '+fetchUser.data.query[0].surname}}</h1>
+                                <p id="susertag" wappler-command="editContent">@{{fetchUser.data.query[0].username}}</p>
+                            </div>
+                        </div>
+                        <!-- Row to display the email of the user -->
+                        <div class="row">
+                            <div class="text-center info-field-col-user rounded w-100 pt-1 pb-1 col d-flex flex-row justify-content-start bg-white border-light border">
+                                <i class="fal fa-envelope-open icon-style"></i>
+                                <p class="text-center mb-0" wappler-command="editContent" wappler-empty="undefined">{{fetchUser.data.query[0].email}}<br></p>
+                            </div>
+                        </div>
+                        <!-- Row to display the telephone of the user -->
+                        <div class="row">
+                            <div class="text-center info-field-col-user border rounded w-100 pt-1 pb-1 col d-flex flex-row justify-content-start bg-white">
+                                <i class="fa-phone fal icon-style"></i>
+                                <p class="text-center mb-0" wappler-command="editContent">{{fetchUser.data.query[0].telephone}}</p>
+                            </div>
+                        </div>
+                        <!-- Row to display the country of the user -->
+                        <div class="row">
+                            <div class="text-center info-field-col-user w-100 pt-1 pb-1 col d-flex flex-row justify-content-start bg-white border-light rounded border">
+                                <i class="fa-map-marker-alt fal icon-style"></i>
+                                <p class="text-center mb-0" wappler-command="editContent">{{fetchUser.data.query[0].country}}</p>
+                            </div>
+                        </div>
+                        <!-- Row to display the bio of the user -->
+                        <div class="row">
+                            <div class="col bg-white rounded pt-1 border border-light">
+                                <p class="font-weight-bold" wappler-command="editContent">Bio</p>
+                                <p wappler-command="editContent">{{fetchUser.query[0].bio}}</p>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="Button Group"><button id="settingsbtn" class="btn" data-target="#settings" data-toggle="modal"><i class="fal fa-cogs fa-2x settings-icon"
+                                    style="--fa-secondary-color:#b81717;"></i>
+                            </button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Row/col is needed to maintain responsivess on small screens. Card to display Offers posted by the User-->
+    <div class="row">
+        <div class="col">
+            <div class="card search-card">
+                <!-- Card's header -->
+                <div class="card-header">Your offers</div>
+                <!-- Card's body -->
+                <div class="card-body text-center med-height-card">
+                    <!-- Row with repeating children, where each column represent the separate Offer -->
+                    <div class="row mb-3" is="dmx-repeat" id="userpostedoffers" dmx-bind:repeat="fetchUserPostedOffers.data.repeat">
+                        <div class="col d-flex justify-content-center">
+                            <!-- Offer's card -->
+                            <div class="card h-100">
+                                <!-- Card's body -->
+                                <div class="card-body">
+                                    <!-- Row to display avatar, name, surname and username of the user, who posted the offer -->
+                                    <div class="row border-bottom border-light pb-2 align-items-start justify-content-around">
+                                        <div class="col-2 align-self-center">
+                                            <img dmx-bind:src="'/assets/images/'+user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                                        </div>
+                                        <div class="col-10 align-self-center text-left">
+                                            <p class="font-weight-bolder mb-0 small">{{user[0].name+' '+user[0].surname}}</p>
+                                            <p class="small font-weight-bolder mb-0">@{{user[0].username}}</p>
+                                        </div>
+                                    </div>
+                                    <!-- Row to display the "I give/I take" levels and subcategories of the offer, as well as ison to popup Modal to view full Offer -->
+                                    <div class="row mt-3">
+                                        <div class="d-flex flex-row align-items-baseline justify-content-around col">
+                                            <div class="d-flex bg-light offer-subcat-level flex-row align-items-center justify-content-around pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                                    dmx-style:color="giveLevel == 1 ? 'red' : (giveLevel == 2 ? 'yellow' : 'green')"></i>
+                                                <p class="small mb-0">{{givesubcat[0].description}}</p>
+                                            </div>
+                                            <i class="fal fa-arrow-right"></i>
+                                            <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                                    dmx-style:color.important="takeLevel == 1 ? 'red' : (takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                                <p class="small mb-0">{{takesubcat[0].description}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col text-right">
+                                            <button id="comments1" class="btn pl-1 pr-1" dmx-on:click="fullOffer.show();fullOffer.data_detail1.select(id)"><i class="fal fa-comment-alt-dots star-icon fa-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Row to display the image of the offer -->
+                                    <div class="row mt-3">
+                                        <div class="col align-self-center text-center d-flex justify-content-center">
+                                            <img dmx-bind:src="'assets/images/'+image1" class="rounded" width="350px" height="300px">
+                                        </div>
+                                    </div>
+                                    <!-- Row to display ID the offer -->
+                                    <div class="row mt-1">
+                                        <div class="col text-right text-dark">
+                                            <p class="card-text text-right text-muted">#{{id}}</p>
+                                        </div>
+                                    </div>
+                                    <!-- Row to display description of the offer -->
+                                    <div class="row">
+                                        <div class="col border align-self-center rounded">
+                                            <p class="card-text text-left font-size-description">{{description}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card's footer -->
+                <div class="card-footer">Keep it up!
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

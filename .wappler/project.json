@@ -1,0 +1,53 @@
+{
+  "projectName": "Skill",
+  "styleFile": "/css/style.css",
+  "assetsFolder": "/assets",
+  "designFramework": "bootstrap4",
+  "frameworks": [
+    {
+      "name": "jquery_slim_33",
+      "type": "cdn"
+    },
+    {
+      "name": "fontawesome_4",
+      "type": "cdn"
+    },
+    {
+      "name": "bootstrap4",
+      "type": "local"
+    },
+    {
+      "name": "appConnect",
+      "type": "local"
+    }
+  ],
+  "hostingType": "docker",
+  "projectServerModel": "node",
+  "webRootFolder": "/public",
+  "useRouting": true,
+  "addBase": true,
+  "routingHandler": "node",
+  "targets": [
+    {
+      "webServerPort": 8100,
+      "webServerLang": "node",
+      "targetType": "docker",
+      "webServer": "node",
+      "NodeVersion": "12",
+      "name": "Development",
+      "remoteURL": "http://localhost:8100",
+      "databaseType": "mysql",
+      "databasePort": 9906,
+      "mySQLVersion": "8.0.x",
+      "mySQL_rootPassword": "${./config.db_development.PASSWORD}",
+      "mySQL_databaseName": "skill",
+      "mySQL_username": "db_user",
+      "mySQL_password": "${./config.app_connection.PASSWORD}",
+      "dockerBuild": true
+    }
+  ],
+  "activeTarget": "Development",
+  "projectType": "web",
+  "npmInstall": true,
+  "activeGitRemote": "skillWappler"
+}

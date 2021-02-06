@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "options": {
+          "rules": {}
+        },
+        "name": "offerid"
+      },
+      {
+        "type": "text",
+        "options": {
+          "rules": {}
+        },
+        "name": "comment"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "insert",
+      "module": "dbupdater",
+      "action": "insert",
+      "options": {
+        "connection": "db",
+        "sql": {
+          "type": "insert",
+          "values": [
+            {
+              "table": "comment",
+              "column": "datetime",
+              "type": "datetime",
+              "value": "{{NOW_UTC}}"
+            },
+            {
+              "table": "comment",
+              "column": "userId",
+              "type": "text",
+              "value": "{{identity}}"
+            },
+            {
+              "table": "comment",
+              "column": "offerId",
+              "type": "text",
+              "value": "{{$_GET.offerid}}"
+            },
+            {
+              "table": "comment",
+              "column": "comment",
+              "type": "text",
+              "value": "{{$_GET.comment}}"
+            }
+          ],
+          "table": "comment",
+          "returning": "id",
+          "query": "INSERT INTO comment\n(datetime, userId, offerId, comment) VALUES (:P1 /* {{NOW_UTC}} */, :P2 /* {{identity}} */, :P3 /* {{$_GET.offerid}} */, :P4 /* {{$_GET.comment}} */)",
+          "params": [
+            {
+              "name": ":P1",
+              "type": "expression",
+              "value": "{{NOW_UTC}}"
+            },
+            {
+              "name": ":P2",
+              "type": "expression",
+              "value": "{{identity}}"
+            },
+            {
+              "name": ":P3",
+              "type": "expression",
+              "value": "{{$_GET.offerid}}"
+            },
+            {
+              "name": ":P4",
+              "type": "expression",
+              "value": "{{$_GET.comment}}"
+            }
+          ]
+        }
+      },
+      "meta": [
+        {
+          "name": "identity",
+          "type": "text"
+        },
+        {
+          "name": "affected",
+          "type": "number"
+        }
+      ]
+    }
+  }
+}

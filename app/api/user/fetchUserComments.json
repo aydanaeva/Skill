@@ -1,0 +1,881 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "comments",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "SELECT",
+            "columns": [
+              {
+                "table": "comment",
+                "column": "*"
+              }
+            ],
+            "table": {
+              "name": "comment"
+            },
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "comment.userId",
+                  "field": "comment.userId",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{identity}}",
+                  "data": {
+                    "table": "comment",
+                    "column": "userId",
+                    "type": "text"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "SELECT *\nFROM comment\nWHERE userId = :P1 /* {{identity}} */\nORDER BY datetime DESC",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{identity}}"
+              }
+            ],
+            "orders": [
+              {
+                "table": "comment",
+                "column": "datetime",
+                "direction": "DESC"
+              }
+            ]
+          }
+        },
+        "output": false,
+        "meta": [
+          {
+            "name": "id",
+            "type": "text"
+          },
+          {
+            "name": "datetime",
+            "type": "text"
+          },
+          {
+            "name": "userId",
+            "type": "text"
+          },
+          {
+            "name": "offerId",
+            "type": "text"
+          },
+          {
+            "name": "comment",
+            "type": "text"
+          }
+        ],
+        "outputType": "array"
+      },
+      {
+        "name": "repeat",
+        "module": "core",
+        "action": "repeat",
+        "options": {
+          "repeat": "{{comments}}",
+          "outputFields": [
+            "comment",
+            "id",
+            "userId",
+            "offerId"
+          ],
+          "exec": {
+            "steps": [
+              {
+                "name": "userinfo",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "user",
+                        "column": "username"
+                      },
+                      {
+                        "table": "user",
+                        "column": "avatar"
+                      },
+                      {
+                        "table": "user",
+                        "column": "name"
+                      },
+                      {
+                        "table": "user",
+                        "column": "surname"
+                      }
+                    ],
+                    "table": {
+                      "name": "user"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "user.id",
+                          "field": "user.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{userId}}",
+                          "data": {
+                            "table": "user",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT username, avatar, name, surname\nFROM user\nWHERE id = :P1 /* {{userId}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{userId}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "username",
+                    "type": "text"
+                  },
+                  {
+                    "name": "avatar",
+                    "type": "text"
+                  },
+                  {
+                    "name": "name",
+                    "type": "text"
+                  },
+                  {
+                    "name": "surname",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "offer",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "offer",
+                        "column": "giveSubcategory"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "takeSubcategory"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "takeLevel"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "giveLevel"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "image1"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "description"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "id"
+                      },
+                      {
+                        "table": "offer",
+                        "column": "userId"
+                      }
+                    ],
+                    "table": {
+                      "name": "offer"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "offer.id",
+                          "field": "offer.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{offerId}}",
+                          "data": {
+                            "table": "offer",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT giveSubcategory, takeSubcategory, takeLevel, giveLevel, image1, description, id, userId\nFROM offer\nWHERE id = :P1 /* {{offerId}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{offerId}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "giveSubcategory",
+                    "type": "text"
+                  },
+                  {
+                    "name": "takeSubcategory",
+                    "type": "text"
+                  },
+                  {
+                    "name": "takeLevel",
+                    "type": "text"
+                  },
+                  {
+                    "name": "giveLevel",
+                    "type": "text"
+                  },
+                  {
+                    "name": "image1",
+                    "type": "text"
+                  },
+                  {
+                    "name": "description",
+                    "type": "text"
+                  },
+                  {
+                    "name": "id",
+                    "type": "text"
+                  },
+                  {
+                    "name": "userId",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "posteduser",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "user",
+                        "column": "avatar"
+                      },
+                      {
+                        "table": "user",
+                        "column": "name"
+                      },
+                      {
+                        "table": "user",
+                        "column": "username"
+                      },
+                      {
+                        "table": "user",
+                        "column": "surname"
+                      }
+                    ],
+                    "table": {
+                      "name": "user"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "user.id",
+                          "field": "user.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{offer[0].userId}}",
+                          "data": {
+                            "table": "user",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT avatar, name, username, surname\nFROM user\nWHERE id = :P1 /* {{offer[0].userId}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{offer[0].userId}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "avatar",
+                    "type": "text"
+                  },
+                  {
+                    "name": "name",
+                    "type": "text"
+                  },
+                  {
+                    "name": "username",
+                    "type": "text"
+                  },
+                  {
+                    "name": "surname",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "takesubcat",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "subcategory",
+                        "column": "description"
+                      }
+                    ],
+                    "table": {
+                      "name": "subcategory"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "subcategory.id",
+                          "field": "subcategory.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{offer[0].takeSubcategory}}",
+                          "data": {
+                            "table": "subcategory",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT description\nFROM subcategory\nWHERE id = :P1 /* {{offer[0].takeSubcategory}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{offer[0].takeSubcategory}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "description",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "givesubcat",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "subcategory",
+                        "column": "description"
+                      }
+                    ],
+                    "table": {
+                      "name": "subcategory"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "subcategory.id",
+                          "field": "subcategory.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{offer[0].giveSubcategory}}",
+                          "data": {
+                            "table": "subcategory",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT description\nFROM subcategory\nWHERE id = :P1 /* {{offer[0].giveSubcategory}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{offer[0].giveSubcategory}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "description",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "ocoms",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "comment",
+                        "column": "*"
+                      }
+                    ],
+                    "table": {
+                      "name": "comment"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "comment.offerId",
+                          "field": "comment.offerId",
+                          "type": "string",
+                          "operator": "equal",
+                          "value": "{{offerId}}",
+                          "data": {
+                            "table": "comment",
+                            "column": "offerId",
+                            "type": "text"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT *\nFROM comment\nWHERE offerId = :P1 /* {{offerId}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{offerId}}"
+                      }
+                    ]
+                  }
+                },
+                "output": false,
+                "meta": [
+                  {
+                    "name": "id",
+                    "type": "text"
+                  },
+                  {
+                    "name": "datetime",
+                    "type": "text"
+                  },
+                  {
+                    "name": "userId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "offerId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "comment",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "repeat1",
+                "module": "core",
+                "action": "repeat",
+                "options": {
+                  "repeat": "{{ocoms}}",
+                  "outputFields": [
+                    "id",
+                    "offerId",
+                    "userId",
+                    "comment"
+                  ],
+                  "exec": {
+                    "steps": {
+                      "name": "ocomuser",
+                      "module": "dbconnector",
+                      "action": "select",
+                      "options": {
+                        "connection": "db",
+                        "sql": {
+                          "type": "SELECT",
+                          "columns": [
+                            {
+                              "table": "user",
+                              "column": "avatar"
+                            },
+                            {
+                              "table": "user",
+                              "column": "username"
+                            }
+                          ],
+                          "table": {
+                            "name": "user"
+                          },
+                          "joins": [],
+                          "wheres": {
+                            "condition": "AND",
+                            "rules": [
+                              {
+                                "id": "user.id",
+                                "field": "user.id",
+                                "type": "double",
+                                "operator": "equal",
+                                "value": "{{userId}}",
+                                "data": {
+                                  "table": "user",
+                                  "column": "id",
+                                  "type": "number"
+                                },
+                                "operation": "="
+                              }
+                            ],
+                            "conditional": null,
+                            "valid": true
+                          },
+                          "query": "SELECT avatar, username\nFROM user\nWHERE id = :P1 /* {{userId}} */",
+                          "params": [
+                            {
+                              "operator": "equal",
+                              "type": "expression",
+                              "name": ":P1",
+                              "value": "{{userId}}"
+                            }
+                          ]
+                        }
+                      },
+                      "output": true,
+                      "meta": [
+                        {
+                          "name": "avatar",
+                          "type": "text"
+                        },
+                        {
+                          "name": "username",
+                          "type": "text"
+                        }
+                      ],
+                      "outputType": "array"
+                    }
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "$index",
+                    "type": "number"
+                  },
+                  {
+                    "name": "$number",
+                    "type": "number"
+                  },
+                  {
+                    "name": "$name",
+                    "type": "text"
+                  },
+                  {
+                    "name": "$value",
+                    "type": "object"
+                  },
+                  {
+                    "name": "id",
+                    "type": "text"
+                  },
+                  {
+                    "name": "datetime",
+                    "type": "text"
+                  },
+                  {
+                    "name": "userId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "offerId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "comment",
+                    "type": "text"
+                  },
+                  {
+                    "name": "ocomuser",
+                    "type": "array",
+                    "sub": [
+                      {
+                        "name": "avatar",
+                        "type": "text"
+                      },
+                      {
+                        "name": "username",
+                        "type": "text"
+                      }
+                    ]
+                  }
+                ],
+                "outputType": "array"
+              }
+            ]
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "name": "$index",
+            "type": "number"
+          },
+          {
+            "name": "$number",
+            "type": "number"
+          },
+          {
+            "name": "$name",
+            "type": "text"
+          },
+          {
+            "name": "$value",
+            "type": "object"
+          },
+          {
+            "name": "id",
+            "type": "text"
+          },
+          {
+            "name": "datetime",
+            "type": "text"
+          },
+          {
+            "name": "userId",
+            "type": "text"
+          },
+          {
+            "name": "offerId",
+            "type": "text"
+          },
+          {
+            "name": "comment",
+            "type": "text"
+          },
+          {
+            "name": "userinfo",
+            "type": "array",
+            "sub": [
+              {
+                "name": "username",
+                "type": "text"
+              },
+              {
+                "name": "avatar",
+                "type": "text"
+              },
+              {
+                "name": "name",
+                "type": "text"
+              },
+              {
+                "name": "surname",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "offer",
+            "type": "array",
+            "sub": [
+              {
+                "name": "giveSubcategory",
+                "type": "text"
+              },
+              {
+                "name": "takeSubcategory",
+                "type": "text"
+              },
+              {
+                "name": "takeLevel",
+                "type": "text"
+              },
+              {
+                "name": "giveLevel",
+                "type": "text"
+              },
+              {
+                "name": "image1",
+                "type": "text"
+              },
+              {
+                "name": "description",
+                "type": "text"
+              },
+              {
+                "name": "id",
+                "type": "text"
+              },
+              {
+                "name": "userId",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "takesubcat",
+            "type": "array",
+            "sub": [
+              {
+                "name": "description",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "givesubcat",
+            "type": "array",
+            "sub": [
+              {
+                "name": "description",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "repeat1",
+            "type": "array",
+            "sub": [
+              {
+                "name": "id",
+                "type": "text"
+              },
+              {
+                "name": "datetime",
+                "type": "text"
+              },
+              {
+                "name": "userId",
+                "type": "text"
+              },
+              {
+                "name": "offerId",
+                "type": "text"
+              },
+              {
+                "name": "comment",
+                "type": "text"
+              },
+              {
+                "name": "ocomuser",
+                "type": "array",
+                "sub": [
+                  {
+                    "name": "avatar",
+                    "type": "text"
+                  },
+                  {
+                    "name": "username",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+<html is="dmx-app">
+
+<head>
+  <meta name="ac:route" content="/register">
+  <base href="/pages/">
+  <script src="../dmxAppConnect/dmxAppConnect.js"></script>
+  <meta charset="UTF-8">
+  <title>Untitled Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="../dmxAppConnect/dmxRouting/dmxRouting.js" defer=""></script>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-VhBcF/php0Z/P5ZxlxaEx1GwqTQVIBu4G4giRWxTKOCjTxsPFETUDdVL5B6vYvOt" crossorigin="anonymous" />
+  <script src="../dmxAppConnect/dmxBrowser/dmxBrowser.js" defer=""></script>
+
+  <link rel="stylesheet" href="../bootstrap/4/css/bootstrap.min.css" />
+  <script src="../dmxAppConnect/dmxBootstrap4Popovers/dmxBootstrap4Popovers.js" defer=""></script>
+  <script src="../dmxAppConnect/dmxFormatter/dmxFormatter.js" defer=""></script>
+</head>
+
+<!-- Conditions for Registration:
+  1. Fields in Register form are required except Country and Telephone
+  2. Username and Email must be unique
+  3. Password and Repeat Password fields should match
+  4. Capslock matters for password
+  5. Capslock does not matter for username -->
+
+<body id="Register" class="d-flex background">
+  <!-- Browser to transfer to user page on successful registration -->
+  <div is="dmx-browser" id="registration"></div>
+
+  <!-- Flex container for responsiveness. Consists of Title, Card and utton group with Anchor Buttons -->
+  <div class="d-flex background flex-column justify-content-center align-items-center flex-nowrap">
+    <div class="row w-100 h-100">
+      <div class="col text-center align-self-center d-flex justify-content-center flex-column align-items-center">
+        <h1 class="text-center font-weight-light mt-3">Skill</h1>
+        <div class="card card-class-login">
+          <div class="card-body text-center">
+            <div class="row">
+              <div class="col">
+                <h3 class="card-title text-center">Sign Up</h3>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <form is="dmx-serverconnect-form" id="registrationForm" action="../api/user/register" dmx-on:success="registration.goto('../user')" method="post" dmx-on:invalid="registration.alert(lastError.message)" site="Skill">
+                  <!-- Row -->
+                  <div class="row">
+                    <!-- Column 1 -->
+                    <div class="col-12 col-md">
+                      <!-- Horizontal Form Group for username -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fa-address-card icon-style fal"></i><input id="name" name="name" class="form-control input-form input-field" placeholder="name" data-rule-email=""
+                            data-msg-required="">
+                        </div>
+                      </div>
+                      <!-- Horizontal Form Group for name -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fa-address-card fal icon-style"></i><input id="surname" name="surname" class="form-control input-form input-field" placeholder="surname" data-msg-required="">
+                        </div>
+                      </div>
+                      <!-- Horizontal Form Group for surname -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fa-address-card fal icon-style"></i><input id="username" name="username" class="form-control input-form input-field" placeholder="username"
+                            data-rule-equalto="text2" data-msg-equalto="Passwords do not match." data-msg-required=""></div>
+                      </div>
+                    </div>
+                    <!-- Column 2 -->
+                    <div class="col-12 col-md">
+                      <!-- Horizontal Form Group for email -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fal fa-envelope icon-style"></i><input id="email" name="email" type="email" class="form-control input-form input-field" placeholder="email"
+                            data-msg-required="" data-msg-email=""></div>
+                      </div>
+                      <!-- Horizontal Form Group for password -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fal fa-key icon-style"></i><input id="password" name="password" type="password" class="form-control input-form input-field" placeholder="password"
+                            data-msg-required=""></div>
+                      </div>
+                      <!-- Horizontal Form Group for repeat password -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fal fa-key icon-style"></i><input id="passwordR" name="passwordR" type="password" class="form-control input-form input-field" placeholder="repeat password"
+                            data-msg-equalto="" data-msg-required=""></div>
+                      </div>
+                    </div>
+                    <!-- Column 3 -->
+                    <div class="col-12 col-md">
+                      <!-- Horizontal Form Group for country -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fal fa-map-marker-alt icon-style"></i><input id="country" name="country" type="text" class="form-control input-form input-field" placeholder="country"></div>
+                      </div>
+                      <!-- Horizontal Form Group for telephone -->
+                      <div class="form-group row">
+                        <div class="d-flex flex-row align-items-baseline col-12"><i class="fal fa-phone icon-style"></i><input id="telephone" name="telephone" class="form-control input-form input-field" placeholder="telephone" data-msg-required="">
+                        </div>
+                      </div>
+                      <!-- Button Group for register submit button -->
+                      <div class="btn-group" role="group" aria-label="Button Group"><button id="register" class="btn btn-success text-light" type="submit">Register</button></div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col"><a href="../login" class="btn button-text btn-info text-light">Have an account?</a></div>
+            </div>
+
+
+            <!-- Registration form. In order to maintain breakpoints on smaller screens the following structure was established: Row -> 3 Columns -> 3 Horizontal Form Group -> Column (which is also flex container) -> Input field and Icon. On smaller screens the Row will resize from 3 Columns to only 1  -->
+
+
+            <!-- Go to Login page  -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../bootstrap/4/js/popper.min.js"></script>
+  <script src="../bootstrap/4/js/bootstrap.min.js"></script>
+</body>
+
+</html>

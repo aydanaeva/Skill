@@ -1,0 +1,105 @@
+<!-- Wappler include head-page="layouts/Main" jquery_slim_33="cdn" fontawesome_4="cdn" bootstrap4="local" is="dmx-app" id="Comments" appConnect="local" -->
+
+<meta name="ac:route" content="/comments">
+<!-- Server connect to fetch User's comments -->
+<dmx-serverconnect id="comments" url="../api/user/fetchUserComments"></dmx-serverconnect>
+
+<!-- Flex container to maintain responsiveness -->
+<div class="d-flex flex-lg-row flex-lg-nowrap card-class-login flex-sm-column justify-content-sm-around align-items-sm-center flex-xl-row align-items-center h-100 flex-column align-content-start justify-content-center">
+    <!-- Modal to view full offer -->
+    <div class="modal" id="fullOfferComments" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal's header that displays Offer #id -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Offer #{{data_detail1.data.offer[0].id}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!-- Modal's body -->
+                <div class="modal-body">
+                    <!-- Flex container with Data Detail property to properly fetch data from the repeated card -->
+                    <div class="d-flex flex-column" is="dmx-data-detail" id="data_detail1" dmx-bind:data="comments.data.repeat" key="id">
+                        <!-- Row to display the avatar, name and surname of the user, who published the offer, as well as the "I give/I take" levels and subcategories -->
+                        <div class="row border-bottom border-light">
+                            <div class="col-2">
+                                <img dmx-bind:src="'/assets/images/'+content.fullOfferComments.data_detail1.data.posteduser[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                            </div>
+                            <div class="col align-self-center text-left">
+                                <p class="font-weight-bolder mb-0 small">{{content.fullOfferComments.data_detail1.data.posteduser[0].name+' '+content.fullOfferComments.data_detail1.data.posteduser[0].username}}</p>
+                                <p class="small font-weight-bolder mb-0">@{{content.fullOfferComments.data_detail1.data.posteduser[0].username}}</p>
+                            </div>
+                            <div class="d-flex flex-row justify-content-around col align-items-center">
+                                <div class="d-flex bg-light offer-subcat-level flex-row align-items-center justify-content-around pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                        dmx-style:color="data_detail1.data.offer[0].giveLevel == 1 ? 'red' : (data_detail1.data.offer[0].giveLevel == 2 ? 'yellow' : 'green');"></i>
+                                    <p class="small mb-0">{{fullOfferComments.data_detail1.data.givesubcat[0].description}}</p>
+                                </div>
+                                <i class="fal fa-arrow-right"></i>
+                                <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                                        dmx-style:color="data_detail1.data.offer[0].takeLevel == 1 ? 'red' : (data_detail1.data.offer[0].takeLevel == 2 ? 'yellow' : 'green');"></i>
+                                    <p class="small mb-0">{{fullOfferComments.data_detail1.data.takesubcat[0].description}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Row to display the image and description of the offer -->
+                        <div class="row mt-3">
+                            <div class="col align-self-center text-center">
+                                <img dmx-bind:src="'assets/images/'+fullOfferComments.data_detail1.data.offer[0].image1" class="img-fluid rounded" height="300px" width="350px">
+                            </div>
+                        </div>
+                        <div class="row mt-3 ml-2 mr-2">
+                            <div class="border rounded align-self-center col-12 pl-0 pr-0">
+                                <p class="card-text text-left font-size-description ml-3">{{fullOffer.data_detail1.data.offer[0].description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Flex container that uses the Repeat Region property to dispaly comments on the Offer -->
+                    <div class="d-flex" dmx-repeat:repeat1="fullOfferComments.data_detail1.data.repeat1">
+                        <!-- Row to display avatar and username of the user, who posted the comment. The row is repeated and each row is a new comment -->
+                        <div class="row w-100 align-items-center border-bottom border-light pt-3 pb-3">
+                            <div class="col-2">
+                                <img class="rounded-circle" wappler-command="updateImage" dmx-bind:src="'assets/images/'+ocomuser[0].avatar" width="50px" height="50px">
+                            </div>
+                            <div class="col-2 text-left font-weight-bolder">
+                                <p wappler-command="editContent" class="small mb-0">@{{ocomuser[0].username}}</p>
+                            </div>
+                            <div class="col-8">
+                                <p wappler-command="editContent" wappler-empty="undefined" class="mb-0">{{comment}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal's footer -->
+                <div class="modal-footer">
+                    <!-- Flex container with input for comment and button to send it-->
+                    <div class="d-flex w-100">
+                        <input id="mycomment" name="comment" type="text" class="form-control" placeholder="Comment here..."><button id="sendcomment" class="btn"
+                            dmx-on:click="comment.load({offerid: data_detail1.data.offer[0].id, comment: mycomment.value})"><i class="fal fa-paper-plane star-icon fa-lg"></i></button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row with card to display User's comments -->
+    <div class="row w-100">
+        <div class="col">
+            <div class="card search-card w-100">
+                <!-- Card's header -->
+                <div class="card-header">Your comments</div>
+                <!-- Card's body with repeat children property for comments -->
+                <div class="card-body" is="dmx-repeat" id="commentsOffers" dmx-bind:repeat="comments.data.repeat">
+                    <div class="row w-100">
+                        <div class="col d-flex flex-row align-items-baseline justify-content-between">
+                            <p class="card-text mb-0">Comment: {{comment}}</p>
+                            <!-- Button to display modal of full that references the comment -->
+                            <div class="btn-group" role="group" aria-label="Button Group"><button id="review2" class="btn" dmx-on:click="fullOfferComments.show();fullOfferComments.data_detail1.select(id)"><i class="fal fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

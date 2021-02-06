@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "subcat"
+      },
+      {
+        "type": "text",
+        "name": "cat"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "delete",
+      "module": "dbupdater",
+      "action": "delete",
+      "options": {
+        "connection": "db",
+        "sql": {
+          "type": "delete",
+          "table": "subcategory",
+          "wheres": {
+            "condition": "AND",
+            "rules": [
+              {
+                "id": "categoryId",
+                "field": "categoryId",
+                "type": "string",
+                "operator": "equal",
+                "value": "{{$_GET.cat}}",
+                "data": {
+                  "column": "categoryId"
+                },
+                "operation": "="
+              },
+              {
+                "id": "id",
+                "field": "id",
+                "type": "string",
+                "operator": "equal",
+                "value": "{{$_GET.subcat}}",
+                "data": {
+                  "column": "id"
+                },
+                "operation": "="
+              }
+            ],
+            "conditional": null,
+            "valid": true
+          },
+          "query": "DELETE\nFROM subcategory\nWHERE categoryId = :P1 /* {{$_GET.cat}} */ AND id = :P2 /* {{$_GET.subcat}} */",
+          "params": [
+            {
+              "operator": "equal",
+              "type": "expression",
+              "name": ":P1",
+              "value": "{{$_GET.cat}}"
+            },
+            {
+              "operator": "equal",
+              "type": "expression",
+              "name": ":P2",
+              "value": "{{$_GET.subcat}}"
+            }
+          ]
+        }
+      },
+      "meta": [
+        {
+          "name": "affected",
+          "type": "number"
+        }
+      ]
+    }
+  }
+}

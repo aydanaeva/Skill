@@ -1,0 +1,9 @@
+{
+  "name": "identity",
+  "module": "auth",
+  "action": "identify",
+  "options": {
+    "provider": "security"
+  },
+  "meta": []
+}

@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ],
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "description"
+      },
+      {
+        "type": "text",
+        "name": "cat"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "subcat",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_POST.description.lowercase()}}"
+        }
+      },
+      {
+        "name": "validate",
+        "module": "validator",
+        "action": "validate",
+        "options": {
+          "data": [
+            {
+              "name": "uniqueSubcat",
+              "value": "{{subcat}}",
+              "rules": {
+                "db:notexists": {
+                  "param": {
+                    "connection": "db",
+                    "table": "subcategory",
+                    "column": "description"
+                  },
+                  "message": "Subcategory already exists."
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "insert",
+        "module": "dbupdater",
+        "action": "insert",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "insert",
+            "values": [
+              {
+                "table": "subcategory",
+                "column": "categoryId",
+                "type": "text",
+                "value": "{{$_POST.cat}}"
+              },
+              {
+                "table": "subcategory",
+                "column": "description",
+                "type": "text",
+                "value": "{{subcat}}"
+              }
+            ],
+            "table": "subcategory",
+            "returning": "id",
+            "query": "INSERT INTO subcategory\n(categoryId, description) VALUES (:P1 /* {{$_POST.cat}} */, :P2 /* {{subcat}} */)",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_POST.cat}}"
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{subcat}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "identity",
+            "type": "text"
+          },
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

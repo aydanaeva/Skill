@@ -1,0 +1,355 @@
+<html is="dmx-app">
+
+<head>
+  <meta name="ac:route" content="/main">
+  <base href="/">
+  <script src="dmxAppConnect/dmxAppConnect.js"></script>
+  <meta charset="UTF-8">
+  <title>Untitled Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="dmxAppConnect/dmxBootstrap4Collapse/dmxBootstrap4Collapse.js" defer=""></script>
+  <script src="dmxAppConnect/dmxBootstrap4Navigation/dmxBootstrap4Navigation.js" defer=""></script>
+  <script src="dmxAppConnect/dmxRouting/dmxRouting.js" defer=""></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="dmxAppConnect/dmxDataTraversal/dmxDataTraversal.js" defer=""></script>
+  <script src="dmxAppConnect/dmxBrowser/dmxBrowser.js" defer=""></script>
+
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-VhBcF/php0Z/P5ZxlxaEx1GwqTQVIBu4G4giRWxTKOCjTxsPFETUDdVL5B6vYvOt" crossorigin="anonymous" />
+  <link rel="stylesheet" href="bootstrap/4/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="dmxAppConnect/dmxSlideshow/dmxSlideshow.css" />
+  <script src="dmxAppConnect/dmxSlideshow/dmxSlideshow.js" defer=""></script>
+  <link rel="stylesheet" href="dmxAppConnect/dmxSlideshow/themes/default.css" />
+  <link rel="stylesheet" href="dmxAppConnect/dmxDropzone/dmxDropzone.css" />
+  <script src="dmxAppConnect/dmxDropzone/dmxDropzone.js" defer=""></script>
+  <script src="dmxAppConnect/dmxTyped/dmxTyped.js" defer=""></script>
+  <script src="dmxAppConnect/dmxTyped/typed.min.js" defer=""></script>
+  <link rel="stylesheet" href="dmxAppConnect/dmxValidator/dmxValidator.css" />
+  <script src="dmxAppConnect/dmxValidator/dmxValidator.js" defer=""></script>
+  <link rel="stylesheet" href="dmxAppConnect/dmxAutocomplete/dmxAutocomplete.css" />
+  <script src="dmxAppConnect/dmxAutocomplete/dmxAutocomplete.js" defer=""></script>
+  <script src="dmxAppConnect/dmxSmoothScroll/dmxSmoothScroll.js" defer=""></script>
+  <script src="dmxAppConnect/dmxBootstrap4Modal/dmxBootstrap4Modal.js" defer=""></script>
+  <script src="dmxAppConnect/dmxSwiper/dmxSwiper.js" defer=""></script>
+  <script src="dmxAppConnect/dmxSwiper/swiper.min.js" defer=""></script>
+  <link rel="stylesheet" href="dmxAppConnect/dmxSwiper/themes/default.css" />
+  <script src="dmxAppConnect/dmxScheduler/dmxScheduler.js" defer=""></script>
+  <script src="dmxAppConnect/dmxStateManagement/dmxStateManagement.js" defer=""></script>
+  <script src="socket.io/socket.io.js"></script>
+  <script src="dmxAppConnect/dmxSockets/dmxSockets.js" defer=""></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-bs4.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-bs4.min.js"></script>
+  <script src="dmxAppConnect/dmxSummernote/dmxSummernote.js" defer=""></script>
+</head>
+
+<!-- Main is the layout for all the pages after the user is successfully logged in. Every page of the application has sidebar and filter/search collapse menu -->
+
+<body id="Main" class="background">
+  <dmx-serverconnect id="filter" url="api/offers/filter" site="Skill" dmx-param:sort="sortfilter.value" noload></dmx-serverconnect>
+  <dmx-value id="sortfilter" dmx-bind:value="0"></dmx-value>
+  <dmx-serverconnect id="comment" url="api/user/comment" site="Skill" dmx-param:offerid="searchresult[0].id" dmx-param:comment="fullSearchoffer.mycomment.value" noload></dmx-serverconnect>
+  <dmx-serverconnect id="fetchUserSidebar" url="api/user/fetchUserDataSidebar" site="Skill" dmx-param:userid="fetchUser.data.identity"></dmx-serverconnect>
+  <!-- Refer to Login page when user signs out -->
+  <div is="dmx-browser" id="signoutrefer"></div>
+  <!-- Variable to represnt when the sidebar is toggled or not -->
+  <dmx-value id="sidebar" dmx-bind:value="0"></dmx-value>
+  <!-- Server connect for signout action -->
+  <dmx-serverconnect id="signout" url="api/user/signout" dmx-on:success="signoutrefer.goto('login')" dmx-on:error="signoutrefer.alert('does not work')" noload site="Skill"></dmx-serverconnect>
+  <!-- Server connect to get all existing Offer Categories -->
+  <dmx-serverconnect id="getCats" url="../api/makeNewOffer/getcats"></dmx-serverconnect>
+  <!-- Server connect to get all existing Offer Subcategories for GIVE category-->
+  <dmx-serverconnect id="getGiveSubcats" url="../api/makeNewOffer/getsubcats" dmx-param:cat="givecat.value"></dmx-serverconnect>
+  <!-- Server connect to get all existing Offer Subcategories for TAKE category-->
+  <dmx-serverconnect id="getTakeSubcats" url="../api/makeNewOffer/getsubcats" dmx-param:cat="takecat.value"></dmx-serverconnect>
+
+  <!-- Flex container for responsiveness. Consists of 2 Display Blocks: Sidebar and Navbar. The Display Blocks are chosen to ensure that widths of sidebar and navbar are constant -->
+  <div class="d-flex flex-row justify-content-start h-100 w-100">
+    <div class="modal" id="filterresults" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Results</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3 align-items-center justify-content-center" dmx-bind:repeat="filter.data.repeat" is="dmx-repeat" id="results">
+              <!-- Column is turned to flex container to maintain responsiveness -->
+              <div class="col d-flex justify-content-center">
+                <!-- Card that represnets the Offer -->
+                <div class="card h-100">
+                  <!-- Card's body -->
+                  <div class="card-body">
+                    <!-- Row to display avatar, name, surname and username of the user, who posted the offer -->
+                    <div class="row border-bottom border-light pb-2 align-items-start justify-content-around">
+                      <div class="col-2 align-self-center">
+                        <img dmx-bind:src="'/assets/images/'+user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+
+                      </div>
+                      <div class="col-10 align-self-center text-left">
+                        <p class="font-weight-bolder mb-0 small">{{user[0].name+' '+user[0].surname}}</p>
+                        <p class="small font-weight-bolder mb-0">@{{user[0].username}}</p>
+                      </div>
+                    </div>
+                    <!-- Row to display the "I give/I take" levels and subcategories of the offer, as well as ison to popup Modal to view full Offer -->
+                    <div class="row mt-3">
+                      <div class="d-flex flex-row align-items-baseline justify-content-around col">
+                        <div class="d-flex bg-light offer-subcat-level flex-row align-items-center justify-content-around pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                            dmx-style:color="giveLevel == 1 ? 'red' : (giveLevel == 2 ? 'yellow' : 'green')"></i>
+                          <p class="small mb-0">{{givesubcat[0].description}}</p>
+                        </div>
+                        <i class="fal fa-arrow-right"></i>
+                        <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                            dmx-style:color.important="takeLevel == 1 ? 'red' : (takeLevel == 2 ? 'yellow' : 'green');"></i>
+                          <p class="small mb-0">{{takesubcat[0].description}}</p>
+                        </div>
+                      </div>
+                      <div class="col text-right">
+                        <button id="comments1" class="btn pl-1 pr-1" data-target="#fullNewoffer" dmx-on:click="fullOffer.show();fullOffer.data_detail1.select(id)"><i class="fal fa-comment-alt-dots star-icon fa-lg"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Row to display the image of the offer -->
+                    <div class="row mt-3">
+                      <div class="col align-self-center text-center d-flex justify-content-center">
+                        <img dmx-bind:src="'assets/images/'+image1" class="rounded" width="350px" height="300px">
+                      </div>
+                    </div>
+                    <!-- Row to display ID the offer -->
+                    <div class="row mt-1">
+
+                      <div class="col text-right text-dark">
+                        <p class="card-text text-right text-muted">#{{id}}</p>
+                      </div>
+                    </div>
+                    <!-- Row to display description of the offer -->
+                    <div class="row">
+                      <div class="col border align-self-center rounded">
+                        <p class="card-text text-left font-size-description">{{description}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn" dmx-on:click="sortfilter.setValue(sortfilter.value == 0 ? 1 : 0);filterresults.update()"><i class="fal fa-sort-alt"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal to view full offer -->
+    <div class="modal" id="fullOffer" is="dmx-bs4-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <!-- Modal's header that displays Offer #id -->
+          <div class="modal-header">
+            <h5 class="modal-title">Offer #{{content.fullOffer.data_detail1.data.id}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <!-- Modal's body -->
+          <div class="modal-body">
+            <!-- Flex container with Data Detail property to properly fetch data from the repeated card -->
+            <div class="d-flex flex-column" is="dmx-data-detail" id="data_detail1" dmx-bind:data="filter.data.repeat" key="id">
+              <!-- Row to display the avatar, name and surname of the user, who published the offer, as well as the "I give/I take" levels and subcategories -->
+              <div class="row border-bottom border-light">
+                <div class="col-2">
+                  <img dmx-bind:src="'/assets/images/'+fullOffer.data_detail1.data.user[0].avatar" class="round rounded-circle" width="50px" height="50px">
+                </div>
+                <div class="col align-self-center text-left">
+                  <p class="font-weight-bolder mb-0 small">{{fullOffer.data_detail1.data.user[0].name+" "+fullOffer.data_detail1.data.user[0].surname}}</p>
+                  <p class="small font-weight-bolder mb-0">@{{fullOffer.data_detail1.data.user[0].username}}</p>
+                </div>
+                <div class="d-flex flex-row justify-content-around col align-items-center">
+                  <div class="d-flex bg-light offer-subcat-level flex-row align-items-center justify-content-around pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                      dmx-style:color="fullOffer.data_detail1.data.giveLevel == 1 ? 'red' : (fullOffer.data_detail1.data.giveLevel == 2 ? 'yellow' : 'green');"></i>
+                    <p class="small mb-0">{{fullOffer.data_detail1.data.givesubcat[0].description}}</p>
+                  </div>
+                  <i class="fal fa-arrow-right"></i>
+                  <div class="d-flex bg-light offer-subcat-level flex-row justify-content-around align-items-center pt-1 pb-1 pl-1 pr-1"><i class="fas fa-circle fa-xs level-circle"
+                      dmx-style:color="fullOffer.data_detail1.data.takeLevel == 1 ? 'red' : (fullOffer.data_detail1.data.takeLevel == 2 ? 'yellow' : 'green');"></i>
+                    <p class="small mb-0">{{fullOffer.data_detail1.data.takesubcat[0].description}}</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Row to display the image and description of the offer -->
+              <div class="row mt-3">
+                <div class="col align-self-center text-center">
+                  <img dmx-bind:src="'assets/images/'+fullOffer.data_detail1.data.image1" class="img-fluid rounded" height="300px" width="350px">
+                </div>
+              </div>
+              <div class="row mt-3 ml-2 mr-2">
+                <div class="border rounded align-self-center col-12 pl-0 pr-0">
+                  <p class="card-text text-left font-size-description ml-3">{{fullOffer.data_detail1.data.description}}</p>
+                </div>
+              </div>
+            </div>
+            <!-- Flex container that uses the Repeat Region property to dispaly comments on the Offer -->
+            <div class="d-flex" dmx-repeat:repeat1="fullOffer.data_detail1.data.repeat1">
+              <!-- Row to display avatar and username of the user, who posted the comment. The row is repeated and each row is a new comment -->
+              <div class="row w-100 align-items-center border-bottom border-light pt-3 pb-3">
+                <div class="col-2">
+                  <img class="rounded-circle" wappler-command="updateImage" dmx-bind:src="'assets/images/'+usercomment[0].avatar" width="50px" height="50px">
+                </div>
+                <div class="col-2 text-left font-weight-bolder">
+                  <p wappler-command="editContent" class="small mb-0">@{{usercomment[0].username}}</p>
+                </div>
+                <div class="col-8">
+                  <p wappler-command="editContent" wappler-empty="undefined" class="mb-0">{{comment}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Modal's footer -->
+          <div class="modal-footer">
+            <!-- Flex container with input for comment and button to send it-->
+            <div class="d-flex w-100">
+              <input id="mycomment" name="comment" type="text" class="form-control" placeholder="Comment here..."><button id="sendcomment" class="btn"
+                dmx-on:click="comment.load({offerid: data_detail1.data.id, comment: mycomment.value});newOffers.load({})"><i class="fal fa-paper-plane star-icon fa-lg"></i></button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Sidebar block -->
+    <div class="d-block sidebar-block" dmx-style:margin-left="sidebar.value == 1 ? '0px' : '-250px'" id="sidebarBlock">
+      <!-- Flex container to center items. Contains user's data, such as profile picture, username, name and surname, and Action List (sidebar links)  -->
+      <div class="d-flex flex-column justify-content-center h-100">
+        <div class="row">
+          <!-- Image -->
+          <div class="col">
+            <a dmx-bind:href="'user/'+fetchUserSidebar.data.identity" class="w-50 h-50"><img class="round rounded-circle" dmx-bind:src="'/assets/images/'+fetchUserSidebar.data.query[0].avatar" width="150px" height="150px"></a>
+            <!-- User's name and surname -->
+            <p class="text-black-50 avatar-name mb-0">{{fetchUserSidebar.data.query[0].name+' '+fetchUserSidebar.data.query[0].surname}}</p>
+            <!-- User's username -->
+            <p class="font-weight-bolder text-black-50 avatar-username">@{{fetchUserSidebar.data.query[0].username}}</p>
+          </div>
+        </div>
+        <!-- Action List Group to maintain links to other pages -->
+        <div class="row">
+          <div class="col">
+            <div class="list-group w-100 bg-transparent style2">
+              <!-- Home link -->
+              <a href="#" class="list-group-item-action bg-transparent list-group-item" id="homeLink" dmx-bind:href="'home'"><i class="fa-home fal fa-lg"></i>
+                <p class="mb-0 w-100">Home</p>
+              </a>
+              <!-- User's offers page -->
+              <a href="#" class="list-group-item list-group-item-action bg-transparent" id="offersLink" dmx-bind:href="'offers'"><i class="fal fa-pencil fa-lg"></i>
+                <p class="mb-0 w-100 text-center">Place an offer</p>
+              </a>
+              <!-- User's comments -->
+              <a href="#" class="list-group-item list-group-item-action bg-transparent" id="commentsLink" dmx-bind:href="'comments'"><i class="fal fa-comment fa-lg"></i>
+                <p class="mb-0 w-100 text-center">Comments</p>
+              </a>
+              <!-- Requests page. Only accessible by admins -->
+              <a href="#" class="list-group-item list-group-item-action bg-transparent" id="requestsLink" dmx-bind:href="'admin'" dmx-hide="fetchUserSidebar.data.query[0].isAdmin==0"><i class="fal fa-inbox fa-lg"></i>
+                <p class="mb-0 text-center w-100">Requests</p>
+              </a>
+              <!-- Sign out button action-->
+              <a href="#" class="list-group-item list-group-item-action bg-transparent" id="signoutLink"><i class="fal fa-sign-out-alt fa-lg"></i><button id="signoutbutton" class="btn w-100" dmx-on:click="signout.load(true)">Sign out</button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navbar block  -->
+    <div class="d-block w-100 h-100 content-template" id="navbar">
+      <!-- Navbar -->
+      <nav class="navbar navbar-light bg-light flex-row justify-content-between flex-nowrap sticky-top align-items-start">
+        <!-- Toggle button for Sidebar button (uses Sidebar variable; with dynamic icons) -->
+        <button id="sidebarbtn" class="btn" data-toggle="button" dmx-on:click="sidebar.setValue(sidebar.value==0?1:0)">
+          <i class="fal fa-angle-double-left fa-lg icon-style" dmx-show="sidebar.value==1"></i> <i class="fal fa-angle-double-right" dmx-show="sidebar.value==0"></i>
+        </button>
+        <!-- Collapse for filer/search menu -->
+        <div id="search" class="collapse">
+          <div class="navbar-nav justify-content-xl-between" id="navigationsidebar">
+            <div
+              class="text-lg-center justify-content-lg-center align-items-lg-center flex-lg-column text-md-center justify-content-md-center flex-md-column align-items-md-center justify-content-sm-center align-items-sm-center flex-sm-column flex-column align-items-center justify-content-center">
+              <div class="card search-card">
+                <div class="card-body text-center">
+                  <!-- Form to filter/search offers. 5 Horizontal Form Groups, 4 Paragraphs and Button Group  -->
+
+                  <!-- Show offers by I GIVE/I TAKE filters -->
+                  <p>Search offers</p>
+                  <!-- I GIVE (category, subcategory and level) form group -->
+                  <div class="form-group row">
+                    <label for="select1 select2 select3" class="style12 pt-2">I give</label>
+                    <div class="col"><select id="givecat" class="custom-select" name="givecat" dmx-bind:options="getCats.data.query" optiontext="description" optionvalue="id">
+                        <option value="">Select category</option>
+                      </select></div>
+                    <div class="col"><select id="givesubcat" class="custom-select" name="givesubcat" dmx-bind:options="getGiveSubcats.data.getSubcatsOfCatId" optiontext="description" optionvalue="id" data-msg-required="">
+                        <option value="">Select subcategory</option>
+                      </select></div>
+                    <div class="col"><select id="givelvl" class="custom-select" name="givelvl">
+                        <option value="">Select level</option>
+                        <option value="1">Beginner</option>
+                        <option value="2">Intermediate</option>
+                        <option value="3">Expert</option>
+                      </select></div>
+                  </div>
+                  <!-- I TAKE (category, subcategory and level) form group -->
+                  <div class="form-group row">
+                    <label for="select4 select5 select6" class="pt-2">I take</label>
+                    <div class="col"><select id="takecat" class="custom-select" name="takecat" dmx-bind:options="getCats.data.query" optiontext="description" optionvalue="id">
+                        <option value="">Select category</option>
+                      </select></div>
+                    <div class="col"><select id="takesubcat" class="custom-select" name="takesubcat" dmx-bind:options="getTakeSubcats.data.getSubcatsOfCatId" optiontext="description" optionvalue="id">
+                        <option value="">Select subcategory</option>
+                      </select></div>
+                    <div class="col"><select id="takelvl" class="custom-select" name="takelvl">
+                        <option value="">Select level</option>
+                        <option value="1">Beginner</option>
+                        <option value="2">Intermediate</option>
+                        <option value="3">Expert</option>
+                      </select></div>
+                  </div>
+
+                  <!-- Show offers of specific user -->
+                  <p class="mt-3">Search offers by user</p>
+                  <div class="form-group row">
+                    <div class="col-12"><input type="text" class="form-control" name="userid" aria-describedby="input1_help" placeholder="Enter username"></div>
+                  </div>
+
+                  <!-- Show specific offers -->
+                  <p class="mt-3">Search by offer number</p>
+                  <div class="form-group row">
+                    <div class="col-12"><input type="text" class="form-control" name="offerid" aria-describedby="input1_help" placeholder="Enter offer ID"></div>
+                  </div>
+
+                  <!-- Additional filters -->
+                  <div class="btn-group " role="group" aria-label="Button Group">
+                    <button id="show1" class="btn font-weight-bold text-white bg-success mb-2" type="submit" data-toggle="modal" data-target="#filterresults"
+                      dmx-on:click="filter.load({takecat: takecat.value, givecat: givecat.value, takesubcat: takesubcat.value, givesubcat: givesubcat.value, takelvl: takelvl.value, givelvl: givelvl.value, userid: userid.value, offerid: offerid.value, sort: sortfilter.value})">Show</button>
+                  </div>
+                </div>
+                <div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggle button for filter/search menu -->
+        <button class="navbar-toggler toggler btn" type="button" data-toggle="collapse" data-target="#search" aria-controls="collapse2" aria-expanded="false" aria-label="Toggle navigation" style="">
+          <span class="fal fa-search icon-style"></span>
+        </button>
+      </nav>
+
+      <!-- Layout Body Content (content of pages that use this layout will be displayed here) -->
+      <div is="dmx-view" id="content">
+        <%- await include(content, locals) %>
+      </div>
+    </div>
+  </div>
+
+  <script src="bootstrap/4/js/popper.min.js"></script>
+  <script src="bootstrap/4/js/bootstrap.min.js"></script>
+</body>
+
+</html>

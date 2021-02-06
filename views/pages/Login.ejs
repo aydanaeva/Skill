@@ -1,0 +1,67 @@
+<html>
+
+<head>
+  <base href="/pages/">
+  <script src="../dmxAppConnect/dmxAppConnect.js"></script>
+  <meta charset="UTF-8">
+  <title>Untitled Document</title>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="../dmxAppConnect/dmxTyped/dmxTyped.js" defer=""></script>
+  <script src="../dmxAppConnect/dmxTyped/typed.min.js" defer=""></script>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-VhBcF/php0Z/P5ZxlxaEx1GwqTQVIBu4G4giRWxTKOCjTxsPFETUDdVL5B6vYvOt" crossorigin="anonymous" />
+  <script src="../dmxAppConnect/dmxBrowser/dmxBrowser.js" defer=""></script>
+  <link rel="stylesheet" href="../bootstrap/4/css/bootstrap.min.css" />
+</head>
+
+<!-- Login is done via username and password only. Capslock matters for the password but not for the username -->
+
+<body id="Login" class="d-flex background" is="dmx-app">
+  <!-- Browser totransfer to the user page in case of successful login -->
+  <div is="dmx-browser" id="loginevents"></div>
+
+  <!-- Flex container for responsiveness. Contains Title, Card and Button group with Anchor Buttons -->
+  <div class="d-flex flex-column justify-content-center text-center justify-content-xl-center flex-xl-column align-items-xl-center background">
+    <div class="row">
+      <div class="col d-flex flex-column justify-content-center align-items-center">
+        <h1 class="text-xl-center align-self-xl-center title font-weight-lighter">Skill</h1>
+        <!-- Login card -->
+        <div class="card align-self-center text-center rounded card-class card-class-login">
+          <div class="card-body text-center card-class" id="Cardbody">
+            <!-- Login form. Consists of Title and 3 horizontal form groups (rows) and 1 button group -->
+            <form id="loginform" method="post" is="dmx-serverconnect-form" action="../api/user/login" dmx-on:success="loginevents.goto('../home')" dmx-on:unauthorized="loginevents.alert('No user found :(')"
+              dmx-on:invalid="loginevents.alert(lastError.message)" site="Skill">
+              <h3 class="font-weight-light mb-4">Login</h3>
+              <!-- Row for username -->
+              <div class="form-group row">
+                <div class="col d-flex flex-row align-items-baseline"><i class="far fa-user icon-style"></i><input id="username" name="username" class="form-control input-form input-field mt-0" placeholder="username"></div>
+              </div>
+              <!-- Row for password -->
+              <div class="form-group row">
+                <div class="col d-flex align-items-baseline"><i class="far fa-key icon-style"></i><input id="password" name="password" type="password" class="form-control input-form input-field" placeholder="password"></div>
+              </div>
+              <!-- Row for "Remember me" checkbox -->
+              <div class="form-group row">
+                <div class="col d-flex justify-content-end">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="1" id="input1" name="remember">
+                    <label class="form-check-label" for="input1" id="remember">Remember</label>
+                  </div>
+                </div>
+              </div>
+              <!-- Button group for login form submit; password reset and registration links -->
+              <button id="login" class="btn btn-secondary mb-3" type="submit">Login</button>
+            </form>
+            <div class="btn-group btn-group-vertical" role="group" aria-label="Button Group"><a href="../register" class="btn button-text-large font-weight-light">Create an account</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../bootstrap/4/js/popper.min.js"></script>
+  <script src="../bootstrap/4/js/bootstrap.min.js"></script>
+</body>
+
+</html>

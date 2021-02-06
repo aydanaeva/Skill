@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "stars"
+      },
+      {
+        "type": "text",
+        "name": "offerid"
+      },
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "stars + starsandnums[0]"
+      }
+    ],
+    "$_POST": [
+      {
+        "type": "number",
+        "name": "id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "starsandnums",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "SELECT",
+            "columns": [
+              {
+                "table": "offer",
+                "column": "stars"
+              },
+              {
+                "table": "offer",
+                "column": "numOfRates"
+              }
+            ],
+            "table": {
+              "name": "offer"
+            },
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "offer.id",
+                  "field": "offer.id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_GET.offerid}}",
+                  "data": {
+                    "table": "offer",
+                    "column": "id",
+                    "type": "number"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "SELECT stars, numOfRates\nFROM offer\nWHERE id = :P1 /* {{$_GET.offerid}} */",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.offerid}}"
+              }
+            ]
+          }
+        },
+        "output": false,
+        "meta": [
+          {
+            "name": "stars",
+            "type": "text"
+          },
+          {
+            "name": "numOfRates",
+            "type": "text"
+          }
+        ],
+        "outputType": "array"
+      },
+      {
+        "name": "incrnum",
+        "module": "dbupdater",
+        "action": "update",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "update",
+            "values": [
+              {
+                "table": "offer",
+                "column": "numOfRates",
+                "type": "number",
+                "value": "{{starsandnums.numOfRates + 1}}"
+              }
+            ],
+            "table": "offer",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_POST.id}}",
+                  "data": {
+                    "column": "id"
+                  },
+                  "operation": "="
+                }
+              ]
+            },
+            "query": "UPDATE offer\nSET numOfRates = :P1 /* {{starsandnums.numOfRates + 1}} */\nWHERE id = :P2 /* {{$_POST.id}} */",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{starsandnums.numOfRates + 1}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_POST.id}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "updstars",
+        "module": "dbupdater",
+        "action": "update",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "update",
+            "values": [
+              {
+                "table": "offer",
+                "column": "stars",
+                "type": "text",
+                "value": "{{$_GET.stars + starsandnums[0].stars / incrnum.affected}}"
+              }
+            ],
+            "table": "offer",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_POST.id}}",
+                  "data": {
+                    "column": "id"
+                  },
+                  "operation": "="
+                }
+              ]
+            },
+            "query": "UPDATE offer\nSET stars = :P1 /* {{$_GET.stars + starsandnums[0].stars / incrnum.affected}} */\nWHERE id = :P2 /* {{$_POST.id}} */",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_GET.stars + starsandnums[0].stars / incrnum.affected}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_POST.id}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

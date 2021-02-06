@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "cat"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "getSubcatsOfCatId",
+      "module": "dbconnector",
+      "action": "select",
+      "options": {
+        "connection": "db",
+        "sql": {
+          "type": "SELECT",
+          "columns": [
+            {
+              "table": "subcategory",
+              "column": "*"
+            }
+          ],
+          "table": {
+            "name": "subcategory"
+          },
+          "joins": [],
+          "wheres": {
+            "condition": "AND",
+            "rules": [
+              {
+                "id": "subcategory.categoryId",
+                "field": "subcategory.categoryId",
+                "type": "string",
+                "operator": "equal",
+                "value": "{{$_GET.cat}}",
+                "data": {
+                  "table": "subcategory",
+                  "column": "categoryId",
+                  "type": "text"
+                },
+                "operation": "="
+              }
+            ],
+            "conditional": null,
+            "valid": true
+          },
+          "query": "SELECT *\nFROM subcategory\nWHERE categoryId = :P1 /* {{$_GET.cat}} */",
+          "params": [
+            {
+              "operator": "equal",
+              "type": "expression",
+              "name": ":P1",
+              "value": "{{$_GET.cat}}"
+            }
+          ]
+        }
+      },
+      "output": true,
+      "meta": [
+        {
+          "name": "id",
+          "type": "text"
+        },
+        {
+          "name": "categoryId",
+          "type": "text"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ],
+      "outputType": "array"
+    }
+  }
+}

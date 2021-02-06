@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ],
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "username"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "username",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{$_POST.username.lowercase()}}"
+        }
+      },
+      {
+        "name": "identity",
+        "module": "auth",
+        "action": "login",
+        "options": {
+          "provider": "security",
+          "username": "{{username}}"
+        },
+        "output": true,
+        "meta": []
+      }
+    ]
+  }
+}

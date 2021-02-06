@@ -1,0 +1,1224 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "takecat"
+      },
+      {
+        "type": "text",
+        "name": "givecat"
+      },
+      {
+        "type": "text",
+        "name": "takesubcat"
+      },
+      {
+        "type": "text",
+        "name": "givesubcat"
+      },
+      {
+        "type": "text",
+        "name": "takelvl"
+      },
+      {
+        "type": "text",
+        "name": "givelvl"
+      },
+      {
+        "type": "text",
+        "name": "userid"
+      },
+      {
+        "type": "text",
+        "name": "offerid"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "userid",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "SELECT",
+            "columns": [
+              {
+                "table": "user",
+                "column": "id"
+              }
+            ],
+            "table": {
+              "name": "user"
+            },
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "user.username",
+                  "field": "user.username",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.userid}}",
+                  "data": {
+                    "table": "user",
+                    "column": "username",
+                    "type": "text"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "SELECT id\nFROM user\nWHERE username = :P1 /* {{$_GET.userid}} */",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.userid}}"
+              }
+            ]
+          }
+        },
+        "output": false,
+        "meta": [
+          {
+            "name": "id",
+            "type": "text"
+          }
+        ],
+        "outputType": "array"
+      },
+      {
+        "name": "offer",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "SELECT",
+            "columns": [
+              {
+                "table": "offer",
+                "column": "*"
+              }
+            ],
+            "table": {
+              "name": "offer"
+            },
+            "joins": [],
+            "query": "SELECT *\nFROM offer\nWHERE (id = :P1 /* {{$_GET.offerid}} */ AND isApproved = true AND isPending = false) OR (isApproved = true AND isPending = false AND takeLevel = :P2 /* {{$_GET.takelvl}} */) OR (isApproved = true AND isPending = false AND giveLevel = :P3 /* {{$_GET.givelvl}} */) OR (isApproved = true AND isPending = false AND giveCategory = :P4 /* {{$_GET.givecat}} */) OR (isApproved = true AND isPending = false AND giveSubcategory = :P5 /* {{$_GET.givesubcat}} */) OR (isApproved = true AND userId = :P6 /* {{userid[0].id}} */ AND isPending = false) OR (isApproved = true AND isPending = false AND takeCategory = :P7 /* {{$_GET.takecat}} */) OR (isApproved = true AND isPending = false AND takeSubcategory = :P8 /* {{$_GET.takesubcat}} */)\nORDER BY datetime DESC, datetime ASC",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.offerid}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_GET.takelvl}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P3",
+                "value": "{{$_GET.givelvl}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P4",
+                "value": "{{$_GET.givecat}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P5",
+                "value": "{{$_GET.givesubcat}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P6",
+                "value": "{{userid[0].id}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P7",
+                "value": "{{$_GET.takecat}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P8",
+                "value": "{{$_GET.takesubcat}}"
+              }
+            ],
+            "orders": [
+              {
+                "table": "offer",
+                "column": "datetime",
+                "direction": "DESC",
+                "condition": "{{$_GET.sort == 0}}"
+              },
+              {
+                "table": "offer",
+                "column": "datetime",
+                "direction": "ASC",
+                "condition": "{{$_GET.sort == 1}}"
+              }
+            ],
+            "wheres": {
+              "condition": "OR",
+              "rules": [
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.id",
+                      "field": "offer.id",
+                      "type": "double",
+                      "operator": "equal",
+                      "value": "{{$_GET.offerid}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "id",
+                        "type": "number"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.takeLevel",
+                      "field": "offer.takeLevel",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{$_GET.takelvl}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "takeLevel",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.giveLevel",
+                      "field": "offer.giveLevel",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{$_GET.givelvl}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "giveLevel",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.giveCategory",
+                      "field": "offer.giveCategory",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{$_GET.givecat}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "giveCategory",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.giveSubcategory",
+                      "field": "offer.giveSubcategory",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{$_GET.givesubcat}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "giveSubcategory",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.userId",
+                      "field": "offer.userId",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{userid[0].id}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "userId",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.takeCategory",
+                      "field": "offer.takeCategory",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{$_GET.takecat}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "takeCategory",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                },
+                {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "id": "offer.isApproved",
+                      "field": "offer.isApproved",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": true,
+                      "data": {
+                        "table": "offer",
+                        "column": "isApproved",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.isPending",
+                      "field": "offer.isPending",
+                      "type": "boolean",
+                      "operator": "equal",
+                      "value": false,
+                      "data": {
+                        "table": "offer",
+                        "column": "isPending",
+                        "type": "boolean"
+                      },
+                      "operation": "="
+                    },
+                    {
+                      "id": "offer.takeSubcategory",
+                      "field": "offer.takeSubcategory",
+                      "type": "string",
+                      "operator": "equal",
+                      "value": "{{$_GET.takesubcat}}",
+                      "data": {
+                        "table": "offer",
+                        "column": "takeSubcategory",
+                        "type": "text"
+                      },
+                      "operation": "="
+                    }
+                  ],
+                  "conditional": null
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            }
+          }
+        },
+        "output": false,
+        "meta": [
+          {
+            "name": "id",
+            "type": "text"
+          },
+          {
+            "name": "userId",
+            "type": "text"
+          },
+          {
+            "name": "datetime",
+            "type": "text"
+          },
+          {
+            "name": "takeCategory",
+            "type": "text"
+          },
+          {
+            "name": "giveCategory",
+            "type": "text"
+          },
+          {
+            "name": "takeSubcategory",
+            "type": "text"
+          },
+          {
+            "name": "giveSubcategory",
+            "type": "text"
+          },
+          {
+            "name": "takeLevel",
+            "type": "text"
+          },
+          {
+            "name": "giveLevel",
+            "type": "text"
+          },
+          {
+            "name": "stars",
+            "type": "text"
+          },
+          {
+            "name": "isApproved",
+            "type": "text"
+          },
+          {
+            "name": "isPending",
+            "type": "text"
+          },
+          {
+            "name": "description",
+            "type": "text"
+          },
+          {
+            "name": "image1",
+            "type": "text"
+          },
+          {
+            "name": "status",
+            "type": "text"
+          },
+          {
+            "name": "numOfRates",
+            "type": "text"
+          }
+        ],
+        "outputType": "array",
+        "type": "dbconnector_select"
+      },
+      {
+        "name": "repeat",
+        "module": "core",
+        "action": "repeat",
+        "options": {
+          "repeat": "{{offer}}",
+          "outputFields": [
+            "id",
+            "takeSubcategory",
+            "giveSubcategory",
+            "takeLevel",
+            "giveLevel",
+            "stars",
+            "description",
+            "image1",
+            "userId"
+          ],
+          "exec": {
+            "steps": [
+              {
+                "name": "user",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "user",
+                        "column": "name"
+                      },
+                      {
+                        "table": "user",
+                        "column": "surname"
+                      },
+                      {
+                        "table": "user",
+                        "column": "avatar"
+                      },
+                      {
+                        "table": "user",
+                        "column": "username"
+                      }
+                    ],
+                    "table": {
+                      "name": "user"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "user.id",
+                          "field": "user.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{userId}}",
+                          "data": {
+                            "table": "user",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT name, surname, avatar, username\nFROM user\nWHERE id = :P1 /* {{userId}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{userId}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "name",
+                    "type": "text"
+                  },
+                  {
+                    "name": "surname",
+                    "type": "text"
+                  },
+                  {
+                    "name": "avatar",
+                    "type": "text"
+                  },
+                  {
+                    "name": "username",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "takesubcat",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "subcategory",
+                        "column": "description"
+                      }
+                    ],
+                    "table": {
+                      "name": "subcategory"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "subcategory.id",
+                          "field": "subcategory.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{takeSubcategory}}",
+                          "data": {
+                            "table": "subcategory",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT description\nFROM subcategory\nWHERE id = :P1 /* {{takeSubcategory}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{takeSubcategory}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "description",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "givesubcat",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "subcategory",
+                        "column": "description"
+                      }
+                    ],
+                    "table": {
+                      "name": "subcategory"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "subcategory.id",
+                          "field": "subcategory.id",
+                          "type": "double",
+                          "operator": "equal",
+                          "value": "{{giveSubcategory}}",
+                          "data": {
+                            "table": "subcategory",
+                            "column": "id",
+                            "type": "number"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT description\nFROM subcategory\nWHERE id = :P1 /* {{giveSubcategory}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{giveSubcategory}}"
+                      }
+                    ]
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "description",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "comments",
+                "module": "dbconnector",
+                "action": "select",
+                "options": {
+                  "connection": "db",
+                  "sql": {
+                    "type": "SELECT",
+                    "columns": [
+                      {
+                        "table": "comment",
+                        "column": "*"
+                      }
+                    ],
+                    "table": {
+                      "name": "comment"
+                    },
+                    "joins": [],
+                    "wheres": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "comment.offerId",
+                          "field": "comment.offerId",
+                          "type": "string",
+                          "operator": "equal",
+                          "value": "{{id}}",
+                          "data": {
+                            "table": "comment",
+                            "column": "offerId",
+                            "type": "text"
+                          },
+                          "operation": "="
+                        }
+                      ],
+                      "conditional": null,
+                      "valid": true
+                    },
+                    "query": "SELECT *\nFROM comment\nWHERE offerId = :P1 /* {{id}} */",
+                    "params": [
+                      {
+                        "operator": "equal",
+                        "type": "expression",
+                        "name": ":P1",
+                        "value": "{{id}}"
+                      }
+                    ]
+                  }
+                },
+                "output": false,
+                "meta": [
+                  {
+                    "name": "id",
+                    "type": "text"
+                  },
+                  {
+                    "name": "datetime",
+                    "type": "text"
+                  },
+                  {
+                    "name": "userId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "offerId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "comment",
+                    "type": "text"
+                  }
+                ],
+                "outputType": "array"
+              },
+              {
+                "name": "repeat1",
+                "module": "core",
+                "action": "repeat",
+                "options": {
+                  "repeat": "{{comments}}",
+                  "outputFields": [
+                    "comment"
+                  ],
+                  "exec": {
+                    "steps": {
+                      "name": "usercomment",
+                      "module": "dbconnector",
+                      "action": "select",
+                      "options": {
+                        "connection": "db",
+                        "sql": {
+                          "type": "SELECT",
+                          "columns": [
+                            {
+                              "table": "user",
+                              "column": "username"
+                            },
+                            {
+                              "table": "user",
+                              "column": "avatar"
+                            }
+                          ],
+                          "table": {
+                            "name": "user"
+                          },
+                          "joins": [],
+                          "query": "SELECT username, avatar\nFROM user\nWHERE id = :P1 /* {{userId}} */",
+                          "params": [
+                            {
+                              "operator": "equal",
+                              "type": "expression",
+                              "name": ":P1",
+                              "value": "{{userId}}"
+                            }
+                          ],
+                          "wheres": {
+                            "condition": "AND",
+                            "rules": [
+                              {
+                                "id": "user.id",
+                                "field": "user.id",
+                                "type": "double",
+                                "operator": "equal",
+                                "value": "{{userId}}",
+                                "data": {
+                                  "table": "user",
+                                  "column": "id",
+                                  "type": "number"
+                                },
+                                "operation": "="
+                              }
+                            ],
+                            "conditional": null,
+                            "valid": true
+                          }
+                        }
+                      },
+                      "output": true,
+                      "meta": [
+                        {
+                          "name": "username",
+                          "type": "text"
+                        },
+                        {
+                          "name": "avatar",
+                          "type": "text"
+                        }
+                      ],
+                      "outputType": "array"
+                    }
+                  }
+                },
+                "output": true,
+                "meta": [
+                  {
+                    "name": "$index",
+                    "type": "number"
+                  },
+                  {
+                    "name": "$number",
+                    "type": "number"
+                  },
+                  {
+                    "name": "$name",
+                    "type": "text"
+                  },
+                  {
+                    "name": "$value",
+                    "type": "object"
+                  },
+                  {
+                    "name": "id",
+                    "type": "text"
+                  },
+                  {
+                    "name": "datetime",
+                    "type": "text"
+                  },
+                  {
+                    "name": "userId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "offerId",
+                    "type": "text"
+                  },
+                  {
+                    "name": "comment",
+                    "type": "text"
+                  },
+                  {
+                    "name": "usercomment",
+                    "type": "array",
+                    "sub": [
+                      {
+                        "name": "username",
+                        "type": "text"
+                      },
+                      {
+                        "name": "avatar",
+                        "type": "text"
+                      }
+                    ]
+                  }
+                ],
+                "outputType": "array"
+              }
+            ]
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "name": "$index",
+            "type": "number"
+          },
+          {
+            "name": "$number",
+            "type": "number"
+          },
+          {
+            "name": "$name",
+            "type": "text"
+          },
+          {
+            "name": "$value",
+            "type": "object"
+          },
+          {
+            "name": "id",
+            "type": "text"
+          },
+          {
+            "name": "userId",
+            "type": "text"
+          },
+          {
+            "name": "datetime",
+            "type": "text"
+          },
+          {
+            "name": "takeCategory",
+            "type": "text"
+          },
+          {
+            "name": "giveCategory",
+            "type": "text"
+          },
+          {
+            "name": "takeSubcategory",
+            "type": "text"
+          },
+          {
+            "name": "giveSubcategory",
+            "type": "text"
+          },
+          {
+            "name": "takeLevel",
+            "type": "text"
+          },
+          {
+            "name": "giveLevel",
+            "type": "text"
+          },
+          {
+            "name": "stars",
+            "type": "text"
+          },
+          {
+            "name": "isApproved",
+            "type": "text"
+          },
+          {
+            "name": "isPending",
+            "type": "text"
+          },
+          {
+            "name": "description",
+            "type": "text"
+          },
+          {
+            "name": "image1",
+            "type": "text"
+          },
+          {
+            "name": "status",
+            "type": "text"
+          },
+          {
+            "name": "numOfRates",
+            "type": "text"
+          },
+          {
+            "name": "user",
+            "type": "array",
+            "sub": [
+              {
+                "name": "name",
+                "type": "text"
+              },
+              {
+                "name": "surname",
+                "type": "text"
+              },
+              {
+                "name": "avatar",
+                "type": "text"
+              },
+              {
+                "name": "username",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "takesubcat",
+            "type": "array",
+            "sub": [
+              {
+                "name": "description",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "givesubcat",
+            "type": "array",
+            "sub": [
+              {
+                "name": "description",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "name": "repeat1",
+            "type": "array",
+            "sub": [
+              {
+                "name": "id",
+                "type": "text"
+              },
+              {
+                "name": "datetime",
+                "type": "text"
+              },
+              {
+                "name": "userId",
+                "type": "text"
+              },
+              {
+                "name": "offerId",
+                "type": "text"
+              },
+              {
+                "name": "comment",
+                "type": "text"
+              },
+              {
+                "name": "usercomment",
+                "type": "array",
+                "sub": [
+                  {
+                    "name": "username",
+                    "type": "text"
+                  },
+                  {
+                    "name": "avatar",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}

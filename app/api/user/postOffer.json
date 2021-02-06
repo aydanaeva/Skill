@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "offerid"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "pending",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": 0
+        }
+      },
+      {
+        "name": "update",
+        "module": "dbupdater",
+        "action": "update",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "update",
+            "values": [
+              {
+                "table": "offer",
+                "column": "isPending",
+                "type": "boolean",
+                "value": "{{pending}}"
+              }
+            ],
+            "table": "offer",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "id",
+                  "field": "id",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.offerid}}",
+                  "data": {
+                    "column": "id"
+                  },
+                  "operation": "="
+                },
+                {
+                  "id": "isApproved",
+                  "field": "isApproved",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "1",
+                  "data": {
+                    "column": "isApproved"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "UPDATE offer\nSET isPending = :P1 /* {{pending}} */\nWHERE id = :P2 /* {{$_GET.offerid}} */ AND isApproved = '1'",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{pending}}"
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_GET.offerid}}"
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}
